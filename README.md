@@ -56,11 +56,12 @@ currently   :
 ![C](https://img.shields.io/badge/C-00599C?style=for-the-badge&logo=c&logoColor=white)
 ![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)
 ![Java](https://img.shields.io/badge/Java_Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
-![PHP](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![RabbitMQ](https://img.shields.io/badge/RabbitMQ-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white)
+![PHP](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
 ![Kafka](https://img.shields.io/badge/Apache_Kafka-231F20?style=for-the-badge&logo=apache-kafka&logoColor=white)
+![RabbitMQ](https://img.shields.io/badge/RabbitMQ-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white)
 ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
+![Valkey](https://img.shields.io/badge/Valkey-005C8A?style=for-the-badge&logo=valkey&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
 
 </details>
@@ -69,14 +70,17 @@ currently   :
 <summary><b>🏗️ DevOps · Infrastructure · Cloud</b></summary>
 <br>
 
-![Docker](https://img.shields.io/badge/Docker_Swarm-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Terraform](https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white)
-![Ansible](https://img.shields.io/badge/Ansible-EE0000?style=for-the-badge&logo=ansible&logoColor=white)
 ![Proxmox](https://img.shields.io/badge/Proxmox_VE-E57000?style=for-the-badge&logo=proxmox&logoColor=white)
 ![HashiCorp](https://img.shields.io/badge/HashiCorp_Packer-000000?style=for-the-badge&logo=hashicorp&logoColor=white)
-![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
+![Terraform](https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white)
+![OpenTofu](https://img.shields.io/badge/OpenTofu-FFDA18?style=for-the-badge&logo=opentofu&logoColor=black)
+![Ansible](https://img.shields.io/badge/Ansible-EE0000?style=for-the-badge&logo=ansible&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker_Swarm-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)
+![LGTM Stack](https://img.shields.io/badge/LGTM_Stack-Loki_Grafana_Tempo_Mimir-blue?style=for-the-badge&logo=grafana&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
 ![Fedora](https://img.shields.io/badge/Fedora-51A2DA?style=for-the-badge&logo=fedora&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
 
 </details>
 
@@ -87,9 +91,10 @@ currently   :
 ![Cisco](https://img.shields.io/badge/Cisco_OSPF%2FBGP-1BA0D7?style=for-the-badge&logo=cisco&logoColor=white)
 ![OPNsense](https://img.shields.io/badge/OPNsense-D94F00?style=for-the-badge&logo=opnsense&logoColor=white)
 ![Caddy](https://img.shields.io/badge/Caddy-1F88C0?style=for-the-badge&logo=caddy&logoColor=white)
-![ESP32](https://img.shields.io/badge/ESP32-E7352C?style=for-the-badge&logo=espressif&logoColor=white)
+![Traefik](https://img.shields.io/badge/Traefik-24A1C1?style=for-the-badge&logo=traefik&logoColor=white)
 ![MQTT](https://img.shields.io/badge/MQTT-660066?style=for-the-badge&logo=mqtt&logoColor=white)
 ![LoRa](https://img.shields.io/badge/LoRa-00A3E0?style=for-the-badge&logoColor=white)
+![ESP32](https://img.shields.io/badge/ESP32-E7352C?style=for-the-badge&logo=espressif&logoColor=white)
 
 </details>
 
@@ -102,7 +107,14 @@ currently   :
 ![Burp Suite](https://img.shields.io/badge/Burp_Suite-FF6633?style=for-the-badge&logo=portswigger&logoColor=white)
 ![OWASP](https://img.shields.io/badge/OWASP-000000?style=for-the-badge&logo=owasp&logoColor=white)
 
-`Vulnerability Assessment` · `Penetration Testing` · `IDS/IPS` · `SIEM` · `Cryptography/PKI` · `Incident Response` · `OSINT`
+![Vulnerability Assessment](https://img.shields.io/badge/Vulnerability_Assessment-1A1B27?style=for-the-badge)
+![Penetration Testing](https://img.shields.io/badge/Penetration_Testing-1A1B27?style=for-the-badge)
+![IDS/IPS](https://img.shields.io/badge/IDS%2FIPS-1A1B27?style=for-the-badge)
+![SIEM](https://img.shields.io/badge/SIEM-1A1B27?style=for-the-badge)
+![Cryptography/PKI](https://img.shields.io/badge/Cryptography%2FPKI-1A1B27?style=for-the-badge)
+![Incident Response](https://img.shields.io/badge/Incident_Response-1A1B27?style=for-the-badge)
+![OSINT](https://img.shields.io/badge/OSINT-1A1B27?style=for-the-badge)
+
 
 </details>
 
@@ -116,8 +128,8 @@ currently   :
 
 | | Project | Role | Stack | Status |
 |--|---------|------|-------|--------|
-| 🎓 | **Chronicles-OJ** — UNTAN's Official Online Judge | Backend API Specialist (9-person team) | Go · C++ · PostgreSQL | 🟡 Active |
-| ☁️ | **REGtee Cloud** — IaaS/PaaS Platform | Architect | Incus · OVN · Terraform · Go | 🟡 Active |
+| 🎓 | **Chronicles-OJ** — UNTAN's Official Online Judge | Backend API (9-person team) | Go · PostgreSQL . RabbitMQ | 🟡 Active |
+| ☁️ | **REGtee Cloud** — IaaS/PaaS Platform | Architect | Proxmox · OVN · Caddy . Traefik . HashiCorp ·  Ansible . Grafana LGTM Stack .  PostgreSQL . Valkey . RabbitMQ . Go . | 🟡 Active |
 | 🛡️ | **Internal Tooling** — Vuln scanners & OSINT workflows with TUI | Developer | Go · Python · TUI | 🟡 Active |
 
 ### 🛠️ Open Source & Personal
