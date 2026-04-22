@@ -21,6 +21,12 @@
 
 </div>
 
+<div align="center">
+
+ `🎧`  [![Spotify](https://img.shields.io/badge/Listening_to-Spotify-1DB954?style=for-the-badge&logo=spotify&logoColor=white)](https://open.spotify.com/user/username_kamu)  `🎧`
+
+</div>
+
 ---
 
 ## 🧠 `$ whoami`
@@ -129,7 +135,7 @@ currently   :
 | | Project | Role | Stack | Status |
 |--|---------|------|-------|--------|
 | 🎓 | **Chronicles-OJ** — UNTAN's Official Online Judge | Backend API (9-person team) | Go · PostgreSQL . RabbitMQ | 🟡 Active |
-| ☁️ | **REGtee Cloud** — IaaS/PaaS Platform | Architect | Proxmox · OVN · Caddy . Traefik . HashiCorp ·  Ansible . Grafana LGTM Stack .  PostgreSQL . Valkey . RabbitMQ . Go . | 🟡 Active |
+| ☁️ | **REGtee Cloud** — IaaS/PaaS Platform | Architect | Proxmox · OVN · Caddy . Traefik . HashiCorp ·  Ansible . Grafana LGTM Stack .  PostgreSQL . Valkey . RabbitMQ . Go | 🟡 Active |
 | 🛡️ | **Internal Tooling** — Vuln scanners & OSINT workflows with TUI | Developer | Go · Python · TUI | 🟡 Active |
 
 ### 🛠️ Open Source & Personal
@@ -255,6 +261,7 @@ Go CLI tools to parse Forge, Fabric, and Velocity metadata. Managed modded Minec
 [![Portfolio](https://img.shields.io/badge/🌐_Portfolio-porto.tenzly.codes-00f5ff?style=for-the-badge)](https://porto.tenzly.codes)
 [![Docker Hub](https://img.shields.io/badge/🐳_Docker_Hub-tenzly-2496ED?style=for-the-badge)](https://hub.docker.com/u/tenzly)
 [![LinkedIn](https://img.shields.io/badge/💼_LinkedIn-Ragil_Amirzaky-0077B5?style=for-the-badge)](https://linkedin.com/in/ragil-amirzaky)
+[![Beacons](https://img.shields.io/badge/🔗_Beacons-Lapness21-00FF00?style=for-the-badge)](https://beacons.ai/lapness21)
 [![Email](https://img.shields.io/badge/✉️_Email-Contact_Me-ff00aa?style=for-the-badge)](mailto:your@email.com)
 
 </div>
