@@ -20,8 +20,7 @@
   <text x="19" y="12.2" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="8" font-weight="700" fill="#c9d1d9">PRIVATE</text>
 </g><text x="24" y="54" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9.5" fill="#8b949e">REGtee-Cloud /</text>
 <text x="24" y="72" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="14.5" font-weight="800" fill="#f0f3f6">Regtee-MonoRepo</text>
-<text x="24" y="92" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11.5" fill="#c9d1d9">Sovereign bare-metal PaaS/IaaS cloud orchestrator in</text>
-<text x="24" y="108" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11.5" fill="#c9d1d9">Go with WireGuard CGNAT bypass &amp; Proxmox.</text>
+<text x="24" y="92" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11.5" fill="#c9d1d9">Performa Tanpa Kompromi, Jaringan Aman Berdaulat.</text>
 <text x="24" y="134" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#8b949e">★ 0</text>
 <text x="64" y="134" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#8b949e">⑂ 0</text>
 <g transform="translate(104,124)">
@@ -29,4 +28,5 @@
   <text x="6.5" y="8.8" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="6.5" font-weight="800" fill="#ffffff">GO</text>
 </g>
 <text x="123" y="134" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#8b949e">Go</text>
+<text x="418" y="134" text-anchor="end" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9.5" fill="#8b949e">Nov 2026</text>
 </svg>
