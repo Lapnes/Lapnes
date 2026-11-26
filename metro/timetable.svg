@@ -190,12 +190,12 @@
 <rect x="449" y="69" width="13" height="13" rx="2.5" fill="#1b2029"><title>2026-11-23: 0 contributions</title></rect>
 <rect x="449" y="86" width="13" height="13" rx="2.5" fill="#1b2029"><title>2026-11-24: 0 contributions</title></rect>
 <rect x="449" y="103" width="13" height="13" rx="2.5" fill="#1b2029"><title>2026-11-25: 0 contributions</title></rect>
-<rect x="449" y="120" width="13" height="13" rx="2.5" fill="#94361a"><title>2026-11-26: 6 contributions</title></rect>
+<rect x="449" y="120" width="13" height="13" rx="2.5" fill="#94361a"><title>2026-11-26: 7 contributions</title></rect>
 <text x="24" y="187.5" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9" fill="#8b949e">less</text><rect x="70" y="178" width="11" height="11" rx="2" fill="#1b2029"/><rect x="85" y="178" width="11" height="11" rx="2" fill="#5c2615"/><rect x="100" y="178" width="11" height="11" rx="2" fill="#94361a"/><rect x="115" y="178" width="11" height="11" rx="2" fill="#d24f2a"/><rect x="130" y="178" width="11" height="11" rx="2" fill="#f3906e"/><text x="149" y="187.5" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9" fill="#8b949e">more</text>
 <text x="512" y="64" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9" font-weight="700" letter-spacing="1.4" fill="#8b949e">RUNNING FOR</text>
 <text x="512" y="88" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="21" font-weight="800" fill="#f0f3f6">1<tspan dx="6" font-size="14.5" font-weight="600" fill="#c9d1d9">day</tspan></text>
 <text x="512" y="114" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9" font-weight="700" letter-spacing="1.4" fill="#8b949e">LONGEST SERVICE</text>
 <text x="512" y="138" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="21" font-weight="800" fill="#f0f3f6">5<tspan dx="6" font-size="14.5" font-weight="600" fill="#c9d1d9">days</tspan></text>
 <text x="512" y="164" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9" font-weight="700" letter-spacing="1.4" fill="#8b949e">TRIPS IN 2026</text>
-<text x="512" y="188" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="21" font-weight="800" fill="#f0f3f6">269</text>
+<text x="512" y="188" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="21" font-weight="800" fill="#f0f3f6">270<tspan dx="6" font-size="14.5" font-weight="600" fill="#c9d1d9">(117 private)</tspan></text>
 </svg>
