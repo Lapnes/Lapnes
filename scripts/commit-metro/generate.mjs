@@ -1174,7 +1174,7 @@ function renderDispatch(dispatch) {
         : `<circle cx="29" cy="${y - 3}" r="3.5" fill="${item.color}"/>`;
       return `${dot}
 <text x="40" y="${y}" font-family="${T.mono}" font-size="9" font-weight="700" letter-spacing="1.4" fill="${T.muted}">${esc(item.k)}</text>
-<text x="24" y="${y + 18}" font-family="${T.sans}" font-size="12.5" font-weight="600" fill="${T.text}">${esc(trunc(item.v, 54))}</text>`;
+<text x="24" y="${y + 18}" font-family="${T.sans}" font-size="12.2" font-weight="600" fill="${T.text}">${esc(trunc(item.v, 64))}</text>`;
     })
     .join("\n");
 
@@ -1182,8 +1182,8 @@ function renderDispatch(dispatch) {
   const right = comm
     .map((c, idx) => {
       const y = 62 + idx * 46;
-      return `<text x="${midX + 24}" y="${y}" font-family="${T.mono}" font-size="10" font-weight="800" fill="${T.text}">${esc(trunc(c.org, 40))}</text>
-<text x="${midX + 24}" y="${y + 18}" font-family="${T.sans}" font-size="11.5" fill="${T.sub}">${esc(trunc(c.role, 54))}</text>`;
+      return `<text x="${midX + 24}" y="${y}" font-family="${T.mono}" font-size="10" font-weight="800" fill="${T.text}">${esc(trunc(c.org, 44))}</text>
+<text x="${midX + 24}" y="${y + 18}" font-family="${T.sans}" font-size="11.5" fill="${T.sub}">${esc(trunc(c.role, 64))}</text>`;
     })
     .join("\n");
 
