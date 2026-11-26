@@ -1,0 +1,18 @@
+{
+  "username": "Lapnes",
+  "website": "https://porto.tenzly.codes",
+  "tagline": "Every line is a language I write; every stop is one of my projects.",
+
+  "privacy": "mask",
+  "_privacy_options": "show = tampilkan nama & deskripsi repo private | mask = repo private tetap dihitung & muncul sebagai '🔒 private' | hide = repo private hanya dihitung di statistik (bahasa, jumlah repo, kontribusi), tidak tampil di peta/station",
+
+  "maxLines": 5,
+  "maxLanguagesInBars": 5,
+  "stationCount": 4,
+  "stations": [],
+  "_stations_hint": "Kosongkan untuk otomatis (repo yang terakhir di-push). Isi nama repo untuk pin manual, contoh: [\"luco-untan-dev\", \"Enclavitzy-Release\"]",
+
+  "excludeRepos": ["Lapnes"],
+  "excludeLanguages": ["Jupyter Notebook"],
+  "includeForks": false
+}

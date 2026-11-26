@@ -1,0 +1,49 @@
+name: Commit Metro
+
+on:
+  schedule:
+    - cron: "0 */6 * * *" # every 6 hours
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/commit-metro/**"
+      - "metro.config.json"
+      - ".github/workflows/commit-metro.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: commit-metro
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Generate Commit Metro SVGs
+        env:
+          # PAT (classic: scopes `repo` + `read:user`) so private repos & contributions are included.
+          # Falls back to the built-in token (public data only) if the secret is missing.
+          METRO_TOKEN: ${{ secrets.METRO_TOKEN || secrets.GITHUB_TOKEN }}
+        run: node scripts/commit-metro/generate.mjs
+
+      - name: Commit changes
+        run: |
+          git config user.name "commit-metro[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add metro README.md
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "chore(metro): refresh Commit Metro [skip ci]"
+            git push
+          fi
