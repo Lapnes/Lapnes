@@ -1,11 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="326" viewBox="0 0 900 326" role="img" aria-label="Languages">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="356" viewBox="0 0 900 356" role="img" aria-label="Languages">
 <title>Languages</title>
-<defs><clipPath id="cc"><rect width="900" height="326" rx="12"/></clipPath></defs>
+<defs><clipPath id="cc"><rect width="900" height="356" rx="12"/></clipPath></defs>
 <g clip-path="url(#cc)">
-  <rect width="900" height="326" fill="#10141b"/>
+  <rect width="900" height="356" fill="#10141b"/>
   <rect width="900" height="5" fill="#e8552d"/>
 </g>
-<rect x="0.5" y="0.5" width="899" height="325" rx="12" fill="none" stroke="#262c36"/>
+<rect x="0.5" y="0.5" width="899" height="355" rx="12" fill="none" stroke="#262c36"/>
 <g transform="translate(24,30)">
   <circle cx="7" cy="0" r="7" fill="#e8552d"/>
   <text x="7" y="3.5" text-anchor="middle" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="9" font-weight="800" fill="#fff">M</text>
@@ -91,4 +91,14 @@
   <animate attributeName="width" values="0;0;46.0" keyTimes="0;0.49;1" dur="1.6s" fill="freeze"/>
 </rect>
 <text x="876" y="282" text-anchor="end" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#c9d1d9">3%</text>
+<g transform="translate(24,300)">
+  <rect width="16" height="16" rx="3.5" fill="#dea584"/>
+  <text x="8" y="10.9" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="8.0" font-weight="800" fill="#0d1117">RS</text>
+</g>
+<text x="50" y="312.5" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#f0f3f6">Rust</text>
+<rect x="200" y="303" width="576" height="10" rx="5" fill="#30363d"/>
+<rect x="200" y="303" width="36.6" height="10" rx="5" fill="#dea584">
+  <animate attributeName="width" values="0;0;36.6" keyTimes="0;0.56;1" dur="1.6s" fill="freeze"/>
+</rect>
+<text x="876" y="312" text-anchor="end" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#c9d1d9">2%</text>
 </svg>
