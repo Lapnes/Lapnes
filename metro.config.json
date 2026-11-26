@@ -9,7 +9,7 @@
   "maskRepos": [],
   "_maskRepos_hint": "Isi nama repo NDA (contoh: [\"secret-client-app\", \"Org/internal-tool\"]) yang mau tetap disamarkan walau privacy='show'",
 
-  "excludeRepos": ["Lapnes"],
+  "excludeRepos": ["Lapnes", "Enclavitzy-Release"],
   "_excludeRepos_hint": "Repo yang benar-benar dikecualikan dari peta, station, dan statistik (match nama repo atau owner/repo)",
 
   "includeOrgAndCollab": true,
