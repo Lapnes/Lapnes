@@ -1,20 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="412" height="150" viewBox="0 0 412 150" role="img" aria-label="Station 4: REGtee-architecture-showcase">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="442" height="156" viewBox="0 0 442 156" role="img" aria-label="Station 4: REGtee-architecture-showcase">
 <title>Station 4: REGtee-architecture-showcase</title>
-<defs><clipPath id="cc"><rect width="412" height="150" rx="12"/></clipPath></defs>
+<defs><clipPath id="cc"><rect width="442" height="156" rx="12"/></clipPath></defs>
 <g clip-path="url(#cc)">
-  <rect width="412" height="150" fill="#10141b"/>
-  <rect width="412" height="5" fill="#e8552d"/>
+  <rect width="442" height="156" fill="#10141b"/>
+  <rect width="442" height="5" fill="#e8552d"/>
 </g>
-<rect x="0.5" y="0.5" width="411" height="149" rx="12" fill="none" stroke="#262c36"/>
+<rect x="0.5" y="0.5" width="441" height="155" rx="12" fill="none" stroke="#262c36"/>
 <g transform="translate(24,30)">
   <circle cx="7" cy="0" r="7" fill="#e8552d"/>
   <text x="7" y="3.5" text-anchor="middle" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="9" font-weight="800" fill="#fff">M</text>
   <text x="21" y="4" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#f0f3f6">Station 04</text>
 </g>
-<circle cx="374" cy="34" r="15" fill="#6e7681"/><text x="374" y="38.5" text-anchor="middle" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="800" fill="#fff">×</text>
-<text x="24" y="70" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="14" font-weight="800" fill="#f0f3f6">REGtee-architecture-showcase</text>
-<text x="24" y="92" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11.5" fill="#c9d1d9">Architecture blueprints, technical specifications,</text>
-<text x="24" y="107" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11.5" fill="#c9d1d9">and system design showcase for REGtee Cloud | a…</text>
-<text x="24" y="128" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#8b949e">★ 0</text>
-<text x="64" y="128" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#8b949e">⑂ 0</text>
+<circle cx="406" cy="34" r="15" fill="#8b949e"/><text x="406" y="37.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="8.5" font-weight="800" fill="#0d1117">OPS</text>
+<text x="24" y="68" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="14.5" font-weight="800" fill="#f0f3f6">REGtee-architecture-showcase</text>
+<text x="24" y="90" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11.5" fill="#c9d1d9">Architecture blueprints, technical specifications, and</text>
+<text x="24" y="106" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11.5" fill="#c9d1d9">system design showcase for REGtee Cloud | a sovereign…</text>
+<text x="24" y="134" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#8b949e">★ 0</text>
+<text x="64" y="134" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#8b949e">⑂ 0</text>
+<g transform="translate(104,124)">
+  <rect width="13" height="13" rx="2.9" fill="#8b949e"/>
+  <text x="6.5" y="8.4" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="5.2" font-weight="800" fill="#0d1117">OPS</text>
+</g>
+<text x="123" y="134" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#8b949e">Infra / Docs</text>
+<text x="418" y="134" text-anchor="end" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9.5" fill="#8b949e">Sep 2026</text>
 </svg>

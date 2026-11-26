@@ -1,0 +1,27 @@
+# Opsional — pasang file ini di repo/org lain (misal REGtee, Enclavitzy, Chronicles)
+# sebagai `.github/workflows/ping-commit-metro.yml` supaya profil `Lapnes/Lapnes`
+# langsung refresh ~20 detik setelah kamu push (tanpa menunggu cron 30 menit).
+#
+# Secret yang dibutuhkan di repo/org sumber:
+#   METRO_DISPATCH_TOKEN = PAT dengan izin write/dispatch ke `Lapnes/Lapnes`
+#   (boleh pakai METRO_TOKEN yang sama).
+
+name: Ping Commit Metro
+
+on:
+  push:
+    branches: [main, master]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Commit Metro refresh
+        env:
+          TOKEN: ${{ secrets.METRO_DISPATCH_TOKEN }}
+        run: |
+          curl -fsSL -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${TOKEN}" \
+            https://api.github.com/repos/Lapnes/Lapnes/dispatches \
+            -d '{"event_type":"refresh-metro"}'

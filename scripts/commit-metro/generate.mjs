@@ -2,10 +2,17 @@
 // Commit Metro — self-hosted GitHub profile generator.
 // "Every line is a language, every stop a project."
 //
-// Pulls data from the GitHub GraphQL API (public + private repos when a
-// personal access token is provided via METRO_TOKEN) and renders a set of
-// SVG cards into ./metro that README.md embeds.
+// Pulls ALL GitHub activity for the configured user:
+//   - Personal repositories (public + private)
+//   - Organization & Collaborator repositories where the user has commits/contributions
+//   - Forks only when the user actually authored commits in them
 //
+// Orders metro stops chronologically from LEFT (oldest pushedAt) through the
+// central @hub to RIGHT (most recently active), dynamically sizes up to 8
+// language lines (including an Infra / Docs line for language-less repos),
+// renders 6 featured Station cards, language bars, and a 26-week timetable.
+//
+// Output is 100% deterministic so scheduled auto-sync commits ONLY on real changes.
 // Zero dependencies — requires Node 18+ (global fetch).
 
 import fs from "node:fs/promises";
@@ -19,11 +26,14 @@ const OUT = path.join(ROOT, "metro");
 const config = JSON.parse(await fs.readFile(path.join(ROOT, "metro.config.json"), "utf8"));
 const TOKEN = process.env.METRO_TOKEN || process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
 if (!TOKEN) {
-  console.error("✖ Set METRO_TOKEN (PAT with repo + read:user) to include private data.");
+  console.error("✖ Set METRO_TOKEN (Classic PAT with repo + read:user + read:org) to include private & org data.");
   process.exit(1);
 }
+
 const LOGIN = config.username;
-const PRIVACY = config.privacy || "mask"; // show | mask | hide
+const PRIVACY = config.privacy || "show"; // show | mask | hide
+const INFRA_LINE = config.infraLineName || "Infra / Docs";
+const INFRA_COLOR = "#8b949e";
 
 // ───────────────────────────── theme ─────────────────────────────
 const T = {
@@ -41,6 +51,27 @@ const T = {
 };
 const HEAT = ["#1b2029", "#5c2615", "#94361a", "#d24f2a", "#f3906e"];
 
+const LANG_COLORS = {
+  Rust: "#dea584",
+  Go: "#00ADD8",
+  Python: "#3572A5",
+  TypeScript: "#3178c6",
+  JavaScript: "#f1e05a",
+  "C++": "#f34b7d",
+  C: "#555555",
+  "C#": "#178600",
+  Shell: "#89e051",
+  Java: "#b07219",
+  Kotlin: "#A97BFF",
+  HTML: "#e34c26",
+  CSS: "#563d7c",
+  Dockerfile: "#384d54",
+  HCL: "#844FBA",
+  Nix: "#7e7eff",
+  Zig: "#ec915c",
+  [INFRA_LINE]: INFRA_COLOR,
+};
+
 const ABBR = {
   JavaScript: "JS", TypeScript: "TS", Python: "PY", Go: "GO", Shell: "SH", "C++": "C++",
   C: "C", "C#": "C#", Java: "JV", Kotlin: "KT", Rust: "RS", HTML: "HT", CSS: "CSS",
@@ -48,15 +79,23 @@ const ABBR = {
   HCL: "HCL", Dockerfile: "DK", Lua: "LUA", "Jupyter Notebook": "NB", PowerShell: "PS",
   Makefile: "MK", Nix: "NIX", Zig: "ZIG", Haskell: "HS", Elixir: "EX", Scala: "SC",
   Batchfile: "BAT", PLSQL: "SQL", TSQL: "SQL", Assembly: "ASM", Blade: "BL", Astro: "AS",
+  YAML: "YML", Markdown: "MD", [INFRA_LINE]: "OPS",
 };
 const abbr = (l) => ABBR[l] || (l || "?").slice(0, 2).toUpperCase();
 
 // ───────────────────────────── helpers ─────────────────────────────
 const esc = (s = "") =>
   String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-const trunc = (s, n) => (s.length > n ? s.slice(0, Math.max(1, n - 1)).trimEnd() + "…" : s);
+
+const trunc = (s, n) => {
+  const str = String(s || "");
+  return str.length > n ? str.slice(0, Math.max(1, n - 1)).trimEnd() + "…" : str;
+};
+
 function wrap(text, maxChars, maxLines) {
-  const words = String(text || "").replace(/\s+/g, " ").trim().split(" ");
+  const clean = String(text || "").replace(/\s+/g, " ").trim();
+  if (!clean) return [];
+  const words = clean.split(" ");
   const lines = [];
   let cur = "";
   for (const w of words) {
@@ -64,22 +103,38 @@ function wrap(text, maxChars, maxLines) {
       if (cur) lines.push(cur);
       cur = w;
       if (lines.length === maxLines) break;
-    } else cur = (cur + " " + w).trim();
+    } else {
+      cur = (cur + " " + w).trim();
+    }
   }
   if (lines.length < maxLines && cur) lines.push(cur);
   const used = lines.join(" ").length;
-  if (used < String(text || "").replace(/\s+/g, " ").trim().length && lines.length) {
-    lines[lines.length - 1] = trunc(lines[lines.length - 1] + "…", maxChars).replace(/…+$/, "") + "…";
+  if (used < clean.length && lines.length) {
+    lines[lines.length - 1] = trunc(lines[lines.length - 1], maxChars - 1).replace(/…+$/, "") + "…";
   }
   return lines.slice(0, maxLines).map((l) => trunc(l, maxChars + 1));
 }
+
 function luminance(hex) {
-  const h = hex.replace("#", "");
+  const h = (hex || "#8b949e").replace("#", "");
+  if (h.length !== 6) return 0.3;
   const [r, g, b] = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 const ink = (hex) => (luminance(hex) > 0.55 ? "#0d1117" : "#ffffff");
 const fmt = (n) => (n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1) + "k" : String(n));
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function fmtMonthYear(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  return `${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+}
+
+function matchesRepoList(repo, set) {
+  if (!set.size) return false;
+  return set.has(repo.name.toLowerCase()) || set.has((repo.nameWithOwner || "").toLowerCase());
+}
 
 function svg(w, h, body, title) {
   return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(title)}">
@@ -89,7 +144,6 @@ ${body}
 `;
 }
 
-// Card frame w/ orange top rail, as in the reference design.
 function card(w, h, label, inner) {
   return `<defs><clipPath id="cc"><rect width="${w}" height="${h}" rx="12"/></clipPath></defs>
 <g clip-path="url(#cc)">
@@ -100,6 +154,7 @@ function card(w, h, label, inner) {
 ${badge(24, 30, label)}
 ${inner}`;
 }
+
 function badge(x, y, label) {
   return `<g transform="translate(${x},${y})">
   <circle cx="7" cy="0" r="7" fill="${T.accent}"/>
@@ -107,41 +162,85 @@ function badge(x, y, label) {
   <text x="21" y="4" font-family="${T.sans}" font-size="11" font-weight="700" fill="${T.text}">${esc(label)}</text>
 </g>`;
 }
+
 function langChip(x, y, lang, color, size = 14) {
   const a = abbr(lang);
-  const fs = a.length > 2 ? size * 0.42 : size * 0.5;
+  const fs = a.length > 2 ? size * 0.4 : size * 0.5;
   return `<g transform="translate(${x},${y})">
-  <rect width="${size}" height="${size}" rx="${size * 0.22}" fill="${color}"/>
-  <text x="${size / 2}" y="${size / 2 + fs * 0.36}" text-anchor="middle" font-family="${T.mono}" font-size="${fs}" font-weight="800" fill="${ink(color)}">${esc(a)}</text>
+  <rect width="${size}" height="${size}" rx="${(size * 0.22).toFixed(1)}" fill="${color}"/>
+  <text x="${size / 2}" y="${(size / 2 + fs * 0.36).toFixed(1)}" text-anchor="middle" font-family="${T.mono}" font-size="${fs.toFixed(1)}" font-weight="800" fill="${ink(color)}">${esc(a)}</text>
 </g>`;
 }
 
-// ───────────────────────────── data ─────────────────────────────
-async function gql(query, variables = {}) {
+// Crisp vector padlock so private badges never depend on OS emoji fonts.
+function lockIcon(x, y, size = 9, color = T.muted) {
+  const s = size / 12;
+  return `<g transform="translate(${x},${y}) scale(${s.toFixed(3)})" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="2.2" y="5.5" width="7.6" height="5.5" rx="1.3" fill="${color}" fill-opacity="0.18"/>
+  <path d="M3.8 5.5V3.9a2.2 2.2 0 0 1 4.4 0v1.6"/>
+</g>`;
+}
+
+// ───────────────────────────── GraphQL client ─────────────────────────────
+async function gql(query, variables = {}, { allowPartial = false } = {}) {
   const res = await fetch("https://api.github.com/graphql", {
     method: "POST",
-    headers: { Authorization: `bearer ${TOKEN}`, "Content-Type": "application/json", "User-Agent": "commit-metro" },
+    headers: {
+      Authorization: `bearer ${TOKEN}`,
+      "Content-Type": "application/json",
+      "User-Agent": "commit-metro",
+    },
     body: JSON.stringify({ query, variables }),
   });
   const json = await res.json();
-  if (!res.ok || json.errors) throw new Error(JSON.stringify(json.errors || json, null, 2));
+  if (!res.ok) throw new Error(JSON.stringify(json, null, 2));
+  if (json.errors && (!allowPartial || !json.data)) {
+    throw new Error(JSON.stringify(json.errors, null, 2));
+  }
   return json.data;
 }
 
+const REPO_FIELDS = `
+  name
+  nameWithOwner
+  owner { login }
+  url
+  description
+  isPrivate
+  isFork
+  isArchived
+  isEmpty
+  createdAt
+  pushedAt
+  stargazerCount
+  forkCount
+  primaryLanguage { name color }
+  languages(first: 20, orderBy: { field: SIZE, direction: DESC }) {
+    edges { size node { name color } }
+  }
+`;
+
 async function fetchAll() {
-  const yearStart = new Date(Date.UTC(new Date().getUTCFullYear(), 0, 1)).toISOString();
+  const now = new Date();
+  const yearStart = new Date(Date.UTC(now.getUTCFullYear(), 0, 1)).toISOString();
+
   const head = await gql(
     `query($login:String!, $yearStart:DateTime!){
-      viewer { login }
+      viewer { id login }
       user(login:$login){
-        login name bio location company websiteUrl avatarUrl(size:200)
+        id login name bio location company websiteUrl avatarUrl(size:200)
         followers { totalCount }
         calendar: contributionsCollection {
+          contributionYears
           restrictedContributionsCount
-          contributionCalendar { totalContributions weeks { contributionDays { date contributionCount contributionLevel } } }
+          contributionCalendar {
+            totalContributions
+            weeks { contributionDays { date contributionCount contributionLevel } }
+          }
         }
         year: contributionsCollection(from:$yearStart) {
-          totalCommitContributions restrictedContributionsCount
+          totalCommitContributions
+          restrictedContributionsCount
           contributionCalendar { totalContributions }
         }
       }
@@ -149,94 +248,341 @@ async function fetchAll() {
     { login: LOGIN, yearStart }
   );
 
-  // Paginate repositories. `viewer.repositories` sees private repos when the
-  // token belongs to the user; `user.repositories` is used as a fallback.
   const isSelf = head.viewer.login.toLowerCase() === LOGIN.toLowerCase();
-  const repos = [];
+  const userId = head.user.id;
+  if (!isSelf) {
+    console.warn(`⚠ Token belongs to ${head.viewer.login}, not ${LOGIN} — only public data is visible.`);
+  }
+
+  // 1) Collect all repos across OWNER, COLLABORATOR, ORGANIZATION_MEMBER.
+  const repoMap = new Map();
+  const addRepo = (node, source) => {
+    if (!node || !node.nameWithOwner) return;
+    const key = node.nameWithOwner.toLowerCase();
+    const myCommits = node.defaultBranchRef?.target?.myCommits?.totalCount || 0;
+    const prev = repoMap.get(key);
+    if (!prev) {
+      repoMap.set(key, {
+        ...node,
+        myCommitsCount: myCommits,
+        affiliated: source === "affiliated" || source === "org",
+      });
+    } else {
+      prev.myCommitsCount = Math.max(prev.myCommitsCount, myCommits);
+      prev.affiliated = prev.affiliated || source === "affiliated" || source === "org";
+    }
+  };
+
+  const affiliations = config.includeOrgAndCollab !== false
+    ? "[OWNER, COLLABORATOR, ORGANIZATION_MEMBER]"
+    : "[OWNER]";
+
   let after = null;
   do {
-    const q = `query(${isSelf ? "" : "$login:String!, "}$after:String){
+    const q = `query(${isSelf ? "" : "$login:String!, "}$after:String, $userId:ID!){
       ${isSelf ? "owner: viewer" : "owner: user(login:$login)"} {
-        repositories(first:100, after:$after, ownerAffiliations:OWNER, orderBy:{field:PUSHED_AT, direction:DESC}) {
-          totalCount
+        repositories(first:100, after:$after, affiliations:${affiliations}, orderBy:{field:PUSHED_AT, direction:DESC}) {
           pageInfo { hasNextPage endCursor }
           nodes {
-            name url description isPrivate isFork isArchived stargazerCount forkCount pushedAt
-            primaryLanguage { name color }
-            languages(first:20, orderBy:{field:SIZE, direction:DESC}) { edges { size node { name color } } }
+            ${REPO_FIELDS}
+            defaultBranchRef {
+              target {
+                ... on Commit {
+                  myCommits: history(first:1, author:{id:$userId}) { totalCount }
+                }
+              }
+            }
           }
         }
       }
     }`;
-    const d = await gql(q, isSelf ? { after } : { login: LOGIN, after });
-    const r = d.owner.repositories;
-    repos.push(...r.nodes);
-    after = r.pageInfo.hasNextPage ? r.pageInfo.endCursor : null;
+    const d = await gql(q, isSelf ? { after, userId } : { login: LOGIN, after, userId }, { allowPartial: true });
+    const r = d?.owner?.repositories;
+    if (!r) break;
+    for (const node of r.nodes || []) addRepo(node, "affiliated");
+    after = r.pageInfo?.hasNextPage ? r.pageInfo.endCursor : null;
   } while (after);
 
-  if (!isSelf) console.warn(`⚠ Token belongs to ${head.viewer.login}, not ${LOGIN} — only public data is visible.`);
-  return { user: head.user, repos };
+  // 2) Supplementary pass: enumerate viewer's organizations explicitly so no org repo is missed.
+  if (isSelf && config.includeOrgAndCollab !== false) {
+    try {
+      const orgData = await gql(
+        `query($userId:ID!){
+          viewer {
+            organizations(first:50) {
+              nodes {
+                login
+                repositories(first:100, orderBy:{field:PUSHED_AT, direction:DESC}) {
+                  nodes {
+                    ${REPO_FIELDS}
+                    defaultBranchRef {
+                      target {
+                        ... on Commit {
+                          myCommits: history(first:1, author:{id:$userId}) { totalCount }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }`,
+        { userId },
+        { allowPartial: true }
+      );
+      for (const org of orgData?.viewer?.organizations?.nodes || []) {
+        for (const node of org?.repositories?.nodes || []) addRepo(node, "org");
+      }
+    } catch (err) {
+      console.warn(`⚠ Organization lookup skipped (${err.message.slice(0, 120)})`);
+    }
+  }
+
+  // 3) Collect contributed repositories across ALL contribution years so commits on
+  //    non-default branches or secondary emails in org/collab repos are never missed.
+  const contributedRepos = new Map(); // key -> total contributions
+  const years = (head.user.calendar.contributionYears || [now.getUTCFullYear()]).slice(0, 8);
+  if (years.length) {
+    const yearBlocks = years
+      .map((y) => {
+        const from = `${y}-01-01T00:00:00Z`;
+        const to = `${y}-12-31T23:59:59Z`;
+        return `y${y}: contributionsCollection(from:"${from}", to:"${to}") {
+          commitContributionsByRepository(maxRepositories:100) {
+            contributions { totalCount }
+            repository { ${REPO_FIELDS} }
+          }
+          pullRequestContributionsByRepository(maxRepositories:50) {
+            contributions { totalCount }
+            repository { ${REPO_FIELDS} }
+          }
+        }`;
+      })
+      .join("\n");
+
+    try {
+      const hist = await gql(
+        `query($login:String!){ user(login:$login){ ${yearBlocks} } }`,
+        { login: LOGIN },
+        { allowPartial: true }
+      );
+      for (const y of years) {
+        const col = hist?.user?.[`y${y}`];
+        if (!col) continue;
+        for (const list of [col.commitContributionsByRepository || [], col.pullRequestContributionsByRepository || []]) {
+          for (const entry of list) {
+            const repo = entry?.repository;
+            if (!repo?.nameWithOwner) continue;
+            const key = repo.nameWithOwner.toLowerCase();
+            contributedRepos.set(key, (contributedRepos.get(key) || 0) + (entry.contributions?.totalCount || 0));
+            // Private contributed repos always belong to user's teams/orgs even if org affiliation wasn't listed.
+            if (repo.isPrivate && !repoMap.has(key)) {
+              addRepo(repo, "org");
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.warn(`⚠ Multi-year contribution scan partial (${err.message.slice(0, 120)})`);
+    }
+  }
+
+  return {
+    isSelf,
+    user: head.user,
+    repos: [...repoMap.values()],
+    contributedRepos,
+  };
 }
 
 // ───────────────────────────── processing ─────────────────────────────
-function process_(data) {
-  const { user, repos: all } = data;
-  const exclude = new Set((config.excludeRepos || []).map((s) => s.toLowerCase()));
-  const exLang = new Set(config.excludeLanguages || []);
-  const repos = all.filter((r) => (config.includeForks || !r.isFork) && !exclude.has(r.name.toLowerCase()));
+function processData(data) {
+  const { user, repos: rawRepos, contributedRepos } = data;
+  const excludeSet = new Set((config.excludeRepos || []).map((s) => s.toLowerCase()));
+  const maskSet = new Set((config.maskRepos || []).map((s) => s.toLowerCase()));
+  const exLang = new Set((config.excludeLanguages || []).map((s) => s.toLowerCase()));
+  const overrides = new Map(
+    Object.entries(config.languageOverrides || {}).map(([k, v]) => [k.toLowerCase(), v])
+  );
+  const pinLangs = (config.pinLanguages || []).map((s) => s.toLowerCase());
 
-  // Display-safe view of a repo, honouring privacy mode.
-  let privN = 0;
-  const view = (r) => {
-    if (!r.isPrivate || PRIVACY === "show") return { ...r, label: r.name, desc: r.description, link: r.url };
-    privN += 1;
-    return { ...r, label: `🔒 private-${String(privN).padStart(2, "0")}`, desc: "Private project — details classified.", link: `https://github.com/${user.login}` };
-  };
-  const visible = PRIVACY === "hide" ? repos.filter((r) => !r.isPrivate) : repos;
-  const viewed = new Map(visible.map((r) => [r.name, view(r)]));
+  const loginLower = LOGIN.toLowerCase();
+  let skippedForks = 0;
+  let skippedUntouchedOrg = 0;
 
-  // Languages by bytes across ALL owned repos (public + private).
-  const bytes = new Map();
-  const colors = new Map();
-  for (const r of repos)
-    for (const e of r.languages.edges) {
-      colors.set(e.node.name, e.node.color || "#8b949e");
-      if (exLang.has(e.node.name)) continue;
-      bytes.set(e.node.name, (bytes.get(e.node.name) || 0) + e.size);
+  // Apply inclusion rules:
+  //   1. All personal non-fork repos (public + private)
+  //   2. Any Org / Collaborator repo where user has commits or contributions
+  //   3. Forks ONLY when user authored commits or contributions in them
+  const included = [];
+  for (const r of rawRepos) {
+    if (matchesRepoList(r, excludeSet)) continue;
+    const key = r.nameWithOwner.toLowerCase();
+    const isOwned = (r.owner?.login || "").toLowerCase() === loginLower;
+    const contribCount = (r.myCommitsCount || 0) + (contributedRepos.get(key) || 0);
+    const hasMyWork = contribCount > 0;
+
+    if (r.isFork) {
+      if (config.includeContributedForks !== false && hasMyWork) {
+        included.push({ ...r, isOwned, contribCount });
+      } else {
+        skippedForks++;
+      }
+      continue;
     }
+
+    if (isOwned || hasMyWork) {
+      included.push({ ...r, isOwned, contribCount });
+    } else {
+      skippedUntouchedOrg++;
+    }
+  }
+
+  // Normalize timestamps (pushedAt primary, fallback createdAt) & sort deterministically.
+  const enriched = included.map((r) => {
+    const activeAt = r.pushedAt || r.createdAt;
+    const ts = activeAt ? Date.parse(activeAt) : 0;
+    const overrideLang = overrides.get(r.name.toLowerCase()) || overrides.get(r.nameWithOwner.toLowerCase());
+    const detectedLang = r.primaryLanguage?.name || null;
+    const lineLang = overrideLang || detectedLang || (config.includeInfraLine !== false ? INFRA_LINE : null);
+    const lineColor =
+      (overrideLang && LANG_COLORS[overrideLang]) ||
+      r.primaryLanguage?.color ||
+      LANG_COLORS[lineLang] ||
+      INFRA_COLOR;
+    return { ...r, activeAt, ts, lineLang, lineColor };
+  });
+
+  // Sort newest -> oldest for deterministic masking index & station picking.
+  enriched.sort((a, b) => b.ts - a.ts || a.nameWithOwner.localeCompare(b.nameWithOwner));
+
+  // Build display-safe view of each repo honouring privacy + maskRepos.
+  let maskIndex = 0;
+  const toView = (r) => {
+    const forceMask = matchesRepoList(r, maskSet);
+    const isMasked = r.isPrivate && (PRIVACY === "mask" || forceMask);
+    if (isMasked) {
+      maskIndex += 1;
+      return {
+        ...r,
+        label: `private-${String(maskIndex).padStart(2, "0")}`,
+        desc: "Private project — details classified.",
+        link: null,
+        masked: true,
+        showOrg: false,
+      };
+    }
+    return {
+      ...r,
+      label: r.name,
+      desc: r.description || (r.isPrivate ? "Private project in progress." : "A project in progress."),
+      link: r.isPrivate ? null : r.url,
+      masked: false,
+      showOrg: !r.isOwned,
+    };
+  };
+
+  const visibleRaw = PRIVACY === "hide" ? enriched.filter((r) => !r.isPrivate) : enriched;
+  const visible = visibleRaw.map(toView);
+  const byKey = new Map(visible.map((r) => [r.nameWithOwner.toLowerCase(), r]));
+  const byName = new Map();
+  for (const r of visible) {
+    if (!byName.has(r.name.toLowerCase())) byName.set(r.name.toLowerCase(), r);
+  }
+
+  // Languages by bytes across ALL included repos (public + private + contributed org/collab).
+  const bytes = new Map();
+  const colors = new Map(Object.entries(LANG_COLORS));
+  for (const r of enriched) {
+    if (r.primaryLanguage?.name && r.primaryLanguage?.color) {
+      colors.set(r.primaryLanguage.name, r.primaryLanguage.color);
+    }
+    for (const e of r.languages?.edges || []) {
+      const name = e.node.name;
+      if (e.node.color) colors.set(name, e.node.color);
+      if (exLang.has(name.toLowerCase())) continue;
+      bytes.set(name, (bytes.get(name) || 0) + e.size);
+    }
+  }
   const totalBytes = [...bytes.values()].reduce((a, b) => a + b, 0) || 1;
   const langBars = [...bytes.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, config.maxLanguagesInBars || 5)
-    .map(([name, b]) => ({ name, color: colors.get(name), pct: (b / totalBytes) * 100 }));
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, config.maxLanguagesInBars || 8)
+    .map(([name, b]) => ({
+      name,
+      color: colors.get(name) || "#8b949e",
+      pct: (b / totalBytes) * 100,
+    }));
 
-  // Metro lines: languages ranked by number of (visible) projects.
+  // Group visible repos into Metro Lines.
   const byLang = new Map();
   for (const r of visible) {
-    const l = r.primaryLanguage?.name;
-    if (!l || exLang.has(l)) continue;
-    colors.set(l, r.primaryLanguage.color || colors.get(l) || "#8b949e");
+    const l = r.lineLang;
+    if (!l || exLang.has(l.toLowerCase())) continue;
+    if (!colors.has(l)) colors.set(l, r.lineColor || "#8b949e");
     if (!byLang.has(l)) byLang.set(l, []);
-    byLang.get(l).push(viewed.get(r.name));
+    byLang.get(l).push(r);
   }
-  const lines = [...byLang.entries()]
-    .sort((a, b) => b[1].length - a[1].length || (bytes.get(b[0]) || 0) - (bytes.get(a[0]) || 0))
-    .slice(0, config.maxLines || 5)
-    .map(([name, rs]) => ({ name, color: colors.get(name), repos: rs }));
 
-  // Stations (featured cards).
-  const n = config.stationCount || 4;
-  let stations = (config.stations || []).map((s) => viewed.get(visible.find((r) => r.name.toLowerCase() === s.toLowerCase())?.name)).filter(Boolean);
-  for (const r of visible) {
-    if (stations.length >= n) break;
-    if (!stations.find((s) => s.name === r.name) && !r.isArchived) stations.push(viewed.get(r.name));
+  // Rank lines: pinned languages first, then composite score of repo count + byte weight,
+  // keeping Infra/Docs cleanly positioned so flagship code languages like Rust/Go always shine.
+  const scoreLine = ([name, rs]) => {
+    const pinIdx = pinLangs.indexOf(name.toLowerCase());
+    if (pinIdx !== -1) return 1e9 - pinIdx;
+    const b = bytes.get(name) || 0;
+    const isInfra = name === INFRA_LINE;
+    const base = rs.length * 2.0 + Math.log10(b + 10) * 0.85;
+    return isInfra ? Math.min(base, rs.length * 1.4) : base;
+  };
+
+  const maxLines = Math.max(1, Math.min(8, config.maxLines || 8));
+  const lines = [...byLang.entries()]
+    .sort((a, b) => scoreLine(b) - scoreLine(a) || a[0].localeCompare(b[0]))
+    .slice(0, maxLines)
+    .map(([name, rs]) => ({
+      name,
+      color: colors.get(name) || "#8b949e",
+      // Strict chronological order: OLDEST -> NEWEST (left -> right).
+      repos: [...rs].sort((a, b) => a.ts - b.ts || a.nameWithOwner.localeCompare(b.nameWithOwner)),
+    }));
+
+  // Compute global timeline bounds & median split timestamp across all plotted repos.
+  const allPlottedTs = lines
+    .flatMap((l) => l.repos.map((r) => r.ts))
+    .filter((t) => t > 0)
+    .sort((a, b) => a - b);
+  const minTs = allPlottedTs[0] || 0;
+  const maxTs = allPlottedTs[allPlottedTs.length - 1] || 0;
+  const midTs = allPlottedTs.length
+    ? allPlottedTs[Math.floor(allPlottedTs.length / 2)]
+    : 0;
+
+  // Featured Stations (6 cards by default): manual pins first, then most recently active.
+  const stationCount = config.stationCount || 6;
+  const stations = [];
+  const usedKeys = new Set();
+  for (const s of config.stations || []) {
+    const found = byKey.get(s.toLowerCase()) || byName.get(s.toLowerCase());
+    if (found && !usedKeys.has(found.nameWithOwner.toLowerCase())) {
+      stations.push(found);
+      usedKeys.add(found.nameWithOwner.toLowerCase());
+    }
   }
-  stations = stations.slice(0, n);
+  for (const r of visible) {
+    if (stations.length >= stationCount) break;
+    const k = r.nameWithOwner.toLowerCase();
+    if (!usedKeys.has(k) && !r.isArchived) {
+      stations.push(r);
+      usedKeys.add(k);
+    }
+  }
 
   // Timetable: last 26 weeks + streaks.
   const days = user.calendar.contributionCalendar.weeks.flatMap((w) => w.contributionDays);
-  const today = new Date().toISOString().slice(0, 10);
-  let longest = 0, run = 0;
+  const lastDayDate = days[days.length - 1]?.date || "";
+  let longest = 0;
+  let run = 0;
   for (const d of days) {
     run = d.contributionCount > 0 ? run + 1 : 0;
     longest = Math.max(longest, run);
@@ -245,21 +591,34 @@ function process_(data) {
   for (let i = days.length - 1; i >= 0; i--) {
     const d = days[i];
     if (d.contributionCount > 0) current++;
-    else if (d.date === today && current === 0) continue; // today not over yet
+    else if (d.date === lastDayDate && current === 0) continue;
     else break;
   }
   const weeks = user.calendar.contributionCalendar.weeks.slice(-26);
 
-  const privCount = all.filter((r) => r.isPrivate && !r.isFork).length;
-  const ownCount = all.filter((r) => !r.isFork).length;
+  const privCount = enriched.filter((r) => r.isPrivate).length;
+  const orgCollabCount = enriched.filter((r) => !r.isOwned).length;
+  const yearNum = Number((lastDayDate || "").slice(0, 4)) || new Date().getUTCFullYear();
 
   return {
-    user, lines, langBars, stations, weeks, colors,
+    user,
+    lines,
+    langBars,
+    stations,
+    weeks,
+    colors,
+    timeline: { minTs, midTs, maxTs },
     stats: {
-      current, longest,
+      current,
+      longest,
+      yearNum,
       yearTotal: user.year.contributionCalendar.totalContributions,
       yearPrivate: user.year.restrictedContributionsCount,
-      repoTotal: ownCount, repoPrivate: privCount,
+      repoTotal: enriched.length,
+      repoPrivate: privCount,
+      orgCollabCount,
+      skippedForks,
+      skippedUntouchedOrg,
     },
   };
 }
@@ -276,202 +635,386 @@ async function avatarData(url) {
 }
 
 function renderMap(m, avatar) {
-  const W = 840, H = 450, cx = 420, cy = 268;
+  const W = 900;
+  const cx = 486; // slight right offset balances left terminus pills
   const L = m.lines;
   const n = L.length;
-  // Vertical levels for arms (top → bottom), keeping a gap around the hub.
-  const levels = (() => {
-    const top = Math.ceil(n / 2), bot = n - top;
-    const step = 40, gap = 50;
-    const up = Array.from({ length: top }, (_, i) => -(gap + step * (top - 1 - i)));
-    const down = Array.from({ length: bot }, (_, i) => gap + step * i);
-    return [...up, ...down];
-  })();
-  // Right side order swaps neighbours so lines visibly cross at the hub.
-  const rightOrder = L.map((_, i) => (i ^ 1) < n ? i ^ 1 : i);
 
-  const tracks = [], stops = [], labels = [], pills = [], trains = [], defs = [];
-  const pillX = 40;
+  const topCount = Math.ceil(n / 2);
+  const botCount = n - topCount;
+  const step = 48; // generous vertical spacing -> zero label collision between adjacent lines
+  const topGap = 54;
+  const botGap = 70; // leaves clean air under @lapnes hub label
+
+  const up = Array.from({ length: topCount }, (_, i) => -(topGap + step * (topCount - 1 - i)));
+  const down = Array.from({ length: botCount }, (_, i) => botGap + step * i);
+  const levels = [...up, ...down];
+
+  const topPad = 114;
+  const botPad = 76;
+  const maxUp = topCount ? topGap + step * (topCount - 1) : 60;
+  const maxDown = botCount ? botGap + step * (botCount - 1) : 60;
+  const cy = topPad + maxUp;
+  const H = cy + maxDown + botPad;
+
+  // Cross neighbouring tracks smoothly through the central hub.
+  const rightOrder = L.map((_, i) => ((i ^ 1) < n ? i ^ 1 : i));
+
+  const tracks = [];
+  const stops = [];
+  const labels = [];
+  const pills = [];
+  const trains = [];
+  const defs = [];
+  const pillX = 28;
+  const rightEnd = W - 28;
+  const { minTs, midTs, maxTs } = m.timeline;
+
+  const PILL_LABEL = {
+    "Jupyter Notebook": "JUPYTER",
+    "Objective-C": "OBJ-C",
+    "PowerShell": "PWSH",
+  };
 
   L.forEach((line, i) => {
-    const pillW = Math.max(70, line.name.length * 7 + 34);
+    const pillText = (PILL_LABEL[line.name] || line.name).toUpperCase();
+    const pillW = Math.max(82, Math.min(126, Math.ceil(pillText.length * 6.4 + 34)));
     const leftEnd = pillX + pillW;
     const dyL = levels[i];
     const dyR = levels[rightOrder[i]];
-    const bendL = cx - (52 + Math.abs(dyL) * 0.95);
-    const bendR = cx + (52 + Math.abs(dyR) * 0.95);
-    const yL = cy + dyL, yR = cy + dyR;
-    const rightEnd = W - 40;
+    const bendL = cx - (46 + Math.abs(dyL) * 0.52);
+    const bendR = cx + (46 + Math.abs(dyR) * 0.52);
+    const yL = cy + dyL;
+    const yR = cy + dyR;
 
-    const pathL = `M${leftEnd},${yL} L${bendL},${yL} L${cx},${cy}`;
-    const pathR = `M${cx},${cy} L${bendR},${yR} L${rightEnd},${yR}`;
-    tracks.push(`<path d="${pathL}" fill="none" stroke="${line.color}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>`);
-    tracks.push(`<path d="${pathR}" fill="none" stroke="${line.color}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>`);
+    const pathL = `M${leftEnd},${yL} L${bendL.toFixed(1)},${yL} L${cx},${cy}`;
+    const pathR = `M${cx},${cy} L${bendR.toFixed(1)},${yR} L${rightEnd},${yR}`;
+    tracks.push(
+      `<path d="${pathL}" fill="none" stroke="${line.color}" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>`
+    );
+    tracks.push(
+      `<path d="${pathR}" fill="none" stroke="${line.color}" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>`
+    );
 
     // Terminus pill (left) + buffer stop (right).
+    const a = abbr(line.name);
+    const fg = ink(line.color);
     pills.push(`<g transform="translate(${pillX},${yL - 10})">
   <rect width="${pillW}" height="20" rx="10" fill="${line.color}"/>
-  <rect x="5" y="3" width="14" height="14" rx="3" fill="${ink(line.color)}"/>
-  <text x="12" y="${abbr(line.name).length > 2 ? 12.6 : 13.2}" text-anchor="middle" font-family="${T.mono}" font-size="${abbr(line.name).length > 2 ? 5.8 : 7}" font-weight="800" fill="${line.color}">${esc(abbr(line.name))}</text>
-  <text x="${(pillW + 20) / 2 + 2}" y="14" text-anchor="middle" font-family="${T.mono}" font-size="9.5" font-weight="800" letter-spacing="0.6" fill="${ink(line.color)}">${esc(line.name.toUpperCase())}</text>
+  <rect x="4.5" y="3" width="14" height="14" rx="3" fill="${fg}"/>
+  <text x="11.5" y="${a.length > 2 ? 12.4 : 13.1}" text-anchor="middle" font-family="${T.mono}" font-size="${a.length > 2 ? 5.6 : 6.8}" font-weight="800" fill="${line.color}">${esc(a)}</text>
+  <text x="${((pillW + 20) / 2 + 1).toFixed(1)}" y="13.6" text-anchor="middle" font-family="${T.mono}" font-size="9" font-weight="800" letter-spacing="0.5" fill="${fg}">${esc(trunc(pillText, 13))}</text>
 </g>`);
     pills.push(`<rect x="${rightEnd - 3}" y="${yR - 9}" width="6" height="18" rx="3" fill="${line.color}"/>`);
 
-    // Split projects across both arms.
-    const segL = [leftEnd + 34, bendL - 26];
-    const segR = [bendR + 30, rightEnd - 30];
-    const capL = Math.max(0, Math.floor((segL[1] - segL[0]) / 62) + 1);
-    const capR = Math.max(0, Math.floor((segR[1] - segR[0]) / 90) + 1);
-    const left = [], right = [];
-    line.repos.forEach((r, k) => {
-      if (k % 2 === 0 && left.length < capL) left.push(r);
-      else if (right.length < capR) right.push(r);
-      else if (left.length < capL) left.push(r);
-    });
-    const place = (arr, [a, b], y, side) => {
+    // Split line's chronologically sorted repos around the global median timestamp:
+    //   older (< midTs) -> LEFT arm (oldest at far left -> newer toward hub)
+    //   newer (>= midTs) -> RIGHT arm (older near hub -> newest at far right)
+    let leftAll = line.repos.filter((r) => r.ts < midTs);
+    let rightAll = line.repos.filter((r) => r.ts >= midTs);
+    // Edge case: if all timestamps are identical, put newest on right.
+    if (!leftAll.length && !rightAll.length && line.repos.length) rightAll = line.repos;
+
+    const segL = [leftEnd + 28, bendL - 22];
+    const segR = [bendR + 26, rightEnd - 28];
+    const spanL = Math.max(0, segL[1] - segL[0]);
+    const spanR = Math.max(0, segR[1] - segR[0]);
+    const capL = Math.max(1, Math.min(4, Math.floor(spanL / 72) + 1));
+    const capR = Math.max(1, Math.min(4, Math.floor(spanR / 78) + 1));
+
+    let overflow = 0;
+    let leftShown = leftAll;
+    let rightShown = rightAll;
+
+    if (leftShown.length > capL) {
+      overflow += leftShown.length - capL;
+      // Keep oldest anchor + most recent stops on the left arm so span stays true.
+      leftShown = [leftShown[0], ...leftShown.slice(leftShown.length - (capL - 1))];
+    }
+    if (rightShown.length > capR) {
+      overflow += rightShown.length - capR;
+      // Always prioritize the most recently updated projects on the right arm.
+      rightShown = rightShown.slice(rightShown.length - capR);
+    }
+
+    // Show compact +N overflow badge next to the left terminus when truncated.
+    if (overflow > 0) {
+      const bx = leftEnd + 5;
+      pills.push(`<g transform="translate(${bx},${yL + 9})">
+  <rect width="26" height="13" rx="6.5" fill="${T.card}" stroke="${line.color}" stroke-width="1"/>
+  <text x="13" y="9.5" text-anchor="middle" font-family="${T.mono}" font-size="8" font-weight="700" fill="${T.sub}">+${overflow}</text>
+</g>`);
+    }
+
+    const placeArm = (arr, [aX, bX], y, side) => {
       if (!arr.length) return;
-      const span = b - a;
-      const xs = arr.length === 1 ? [side === "L" ? b : (a + b) / 2] : arr.map((_, k) => (side === "L" ? b - (span * k) / (arr.length - 1) : a + (span * k) / (arr.length - 1)));
-      const spacing = arr.length > 1 ? span / (arr.length - 1) : 160;
+      const span = Math.max(0, bX - aX);
+      let xs;
+      if (arr.length === 1) {
+        // Position single stop naturally along its half of the timeline.
+        const r0 = arr[0];
+        if (side === "L") {
+          const ratio = midTs > minTs ? Math.min(1, Math.max(0, (r0.ts - minTs) / (midTs - minTs))) : 0.5;
+          xs = [aX + span * (0.2 + ratio * 0.65)];
+        } else {
+          const ratio = maxTs > midTs ? Math.min(1, Math.max(0, (r0.ts - midTs) / (maxTs - midTs))) : 0.5;
+          xs = [aX + span * (0.2 + ratio * 0.65)];
+        }
+      } else {
+        // Strictly ordered left-to-right (oldest -> newest) with even readable spacing.
+        xs = arr.map((_, k) => aX + (span * k) / (arr.length - 1));
+      }
+
+      const spacing = arr.length > 1 ? span / (arr.length - 1) : 220;
+      const staggered = arr.length >= 2 && spacing < 195;
+      // Same-side neighbor distance is 2*spacing when staggered, or spacing when all above.
+      const availW = staggered ? Math.min(spacing * 1.75, 165) : Math.min(spacing - 16, 175);
       arr.forEach((r, k) => {
         const x = xs[k];
-        const above = dyL < 0 || side === "R" ? (k % 2 === 0 || spacing > 95) : !(k % 2 === 0 || spacing > 95);
-        const ly = above ? y - 13 : y + 22;
-        const maxChars = Math.max(6, Math.floor(Math.min(spacing * (spacing > 95 ? 1 : 2), 150) / 6.3));
+        const above = staggered ? k % 2 === 0 : true;
+        const ly = above ? y - 12 : y + 20;
+        const maxChars = Math.max(8, Math.min(22, Math.floor(availW / 6.8)));
         const text = trunc(r.label, maxChars);
-        const half = (text.length * 6.2) / 2;
-        const tx = Math.min(Math.max(x, half + 14), W - half - 14);
-        stops.push(`<a xlink:href="${esc(r.link)}" target="_blank"><circle cx="${x}" cy="${y}" r="6.5" fill="${T.bg}" stroke="#ffffff" stroke-width="3"><title>${esc(r.label)}</title></circle></a>`);
-        labels.push(`<text x="${tx.toFixed(1)}" y="${ly}" text-anchor="middle" font-family="${T.sans}" font-size="10.5" font-weight="700" fill="${T.text}" stroke="${T.bg}" stroke-width="3" paint-order="stroke">${esc(text)}</text>`);
+        const lockPad = r.isPrivate ? 12 : 0;
+        const textW = text.length * 6.8 + lockPad;
+        const half = textW / 2;
+        const minX = side === "L" ? leftEnd + half + 8 : bendR + half - 18;
+        const maxX = side === "L" ? bendL - half + 18 : W - half - 18;
+        const tx = Math.min(Math.max(x, Math.min(minX, maxX)), Math.max(minX, maxX));
+
+        const tooltip = `${r.nameWithOwner}${r.isPrivate ? " (Private)" : ""} · ${fmtMonthYear(r.activeAt)}`;
+        const circle = r.isPrivate
+          ? `<circle cx="${x.toFixed(1)}" cy="${y}" r="6.5" fill="${T.bg}" stroke="#ffffff" stroke-width="2.6" stroke-dasharray="3.2 1.6"><title>${esc(tooltip)}</title></circle><circle cx="${x.toFixed(1)}" cy="${y}" r="2.2" fill="${T.accent}"/>`
+          : `<circle cx="${x.toFixed(1)}" cy="${y}" r="6.5" fill="${T.bg}" stroke="#ffffff" stroke-width="2.8"><title>${esc(tooltip)}</title></circle>`;
+
+        stops.push(r.link ? `<a xlink:href="${esc(r.link)}" target="_blank">${circle}</a>` : `<g>${circle}</g>`);
+
+        if (r.isPrivate) {
+          const lx = tx - textW / 2;
+          labels.push(
+            `${lockIcon(lx.toFixed(1), (ly - 8.5).toFixed(1), 8.5, T.accent)}` +
+            `<text x="${(lx + 11).toFixed(1)}" y="${ly}" text-anchor="start" font-family="${T.sans}" font-size="10.2" font-weight="700" fill="${T.text}" stroke="${T.bg}" stroke-width="3.2" paint-order="stroke">${esc(text)}</text>`
+          );
+        } else {
+          labels.push(
+            `<text x="${tx.toFixed(1)}" y="${ly}" text-anchor="middle" font-family="${T.sans}" font-size="10.2" font-weight="700" fill="${T.text}" stroke="${T.bg}" stroke-width="3.2" paint-order="stroke">${esc(text)}</text>`
+          );
+        }
       });
     };
-    place(left, segL, yL, "L");
-    place(right, segR, yR, "R");
 
-    // Animated trains shuttling along each arm.
-    const durL = (7 + ((i * 37) % 5)).toFixed(1), durR = (8 + ((i * 53) % 5)).toFixed(1);
-    defs.push(`<path id="tl${i}" d="M${leftEnd + 8},${yL} L${bendL},${yL} L${cx},${cy}"/>`, `<path id="tr${i}" d="M${cx},${cy} L${bendR},${yR} L${rightEnd - 10},${yR}"/>`);
-    for (const [id, dur, begin] of [[`tl${i}`, durL, `-${i * 1.3}s`], [`tr${i}`, durR, `-${i * 2.1}s`]]) {
-      trains.push(`<g opacity="0"><set attributeName="opacity" to="1" begin="0s"/><rect x="-11" y="-5" width="22" height="10" rx="4" fill="#ffffff" stroke="${line.color}" stroke-width="2"/>
+    placeArm(leftShown, segL, yL, "L");
+    placeArm(rightShown, segR, yR, "R");
+
+    // Deterministic animated trains gliding along both arms.
+    const durL = (7.2 + ((i * 37) % 5) * 0.9).toFixed(1);
+    const durR = (8.0 + ((i * 53) % 5) * 0.9).toFixed(1);
+    defs.push(
+      `<path id="tl${i}" d="M${leftEnd + 8},${yL} L${bendL.toFixed(1)},${yL} L${cx},${cy}"/>`,
+      `<path id="tr${i}" d="M${cx},${cy} L${bendR.toFixed(1)},${yR} L${rightEnd - 10},${yR}"/>`
+    );
+    for (const [id, dur, begin] of [
+      [`tl${i}`, durL, `-${(i * 1.3).toFixed(1)}s`],
+      [`tr${i}`, durR, `-${(i * 2.1 + 0.7).toFixed(1)}s`],
+    ]) {
+      trains.push(`<g opacity="0"><set attributeName="opacity" to="1" begin="0s"/><rect x="-10" y="-4.5" width="20" height="9" rx="4" fill="#ffffff" stroke="${line.color}" stroke-width="2"/>
   <animateMotion dur="${dur}s" begin="${begin}" repeatCount="indefinite" rotate="auto" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear"><mpath xlink:href="#${id}"/></animateMotion></g>`);
     }
   });
 
   const hub = `<g>
   <circle cx="${cx}" cy="${cy}" r="31" fill="${T.bg}" stroke="#ffffff" stroke-width="3.5"/>
-  ${avatar ? `<image xlink:href="${avatar}" x="${cx - 26}" y="${cy - 26}" width="52" height="52" clip-path="url(#hubclip)" preserveAspectRatio="xMidYMid slice"/>` : `<text x="${cx}" y="${cy + 6}" text-anchor="middle" font-family="${T.sans}" font-size="18" font-weight="800" fill="#fff">${esc(m.user.login[0].toUpperCase())}</text>`}
-  <text x="${cx}" y="${cy + 50}" text-anchor="middle" font-family="${T.sans}" font-size="11.5" font-weight="800" fill="#ffffff" stroke="${T.bg}" stroke-width="4" paint-order="stroke">@${esc(m.user.login.toLowerCase())}</text>
+  ${
+    avatar
+      ? `<image xlink:href="${avatar}" x="${cx - 26}" y="${cy - 26}" width="52" height="52" clip-path="url(#hubclip)" preserveAspectRatio="xMidYMid slice"/>`
+      : `<text x="${cx}" y="${cy + 6}" text-anchor="middle" font-family="${T.sans}" font-size="18" font-weight="800" fill="#fff">${esc(m.user.login[0].toUpperCase())}</text>`
+  }
+  <text x="${cx}" y="${cy + 48}" text-anchor="middle" font-family="${T.sans}" font-size="11.5" font-weight="800" fill="#ffffff" stroke="${T.bg}" stroke-width="4" paint-order="stroke">@${esc(m.user.login.toLowerCase())}</text>
 </g>`;
+
+  // Bottom timeline bar showing oldest -> newest orientation.
+  const axisY = H - 36;
+  const oldLabel = minTs ? `← OLDER · ${fmtMonthYear(new Date(minTs).toISOString())}` : "← OLDER";
+  const newLabel = maxTs ? `${fmtMonthYear(new Date(maxTs).toISOString())} · RECENT →` : "RECENT →";
+  const timelineBar = `<g>
+  <line x1="28" y1="${axisY}" x2="${W - 28}" y2="${axisY}" stroke="${T.border}" stroke-width="1" stroke-dasharray="3 4"/>
+  <text x="28" y="${axisY + 16}" font-family="${T.mono}" font-size="9" font-weight="700" fill="${T.muted}">${esc(oldLabel)}</text>
+  <text x="${cx}" y="${axisY + 16}" text-anchor="middle" font-family="${T.mono}" font-size="9" fill="${T.muted}">TIMELINE · ORDERED BY LAST ACTIVITY</text>
+  <text x="${W - 28}" y="${axisY + 16}" text-anchor="end" font-family="${T.mono}" font-size="9" font-weight="700" fill="${T.green}">${esc(newLabel)}</text>
+</g>`;
+
+  const summaryBits = [
+    `${m.stats.repoTotal} projects`,
+    `${m.stats.repoPrivate} private`,
+    m.stats.orgCollabCount ? `${m.stats.orgCollabCount} org/collab` : null,
+    `${L.length} lines`,
+  ].filter(Boolean);
 
   const body = `<defs>
   <clipPath id="hubclip"><circle cx="${cx}" cy="${cy}" r="26"/></clipPath>
   ${defs.join("\n  ")}
 </defs>
 <rect x="0.5" y="0.5" width="${W - 1}" height="${H - 1}" rx="16" fill="${T.bg}" stroke="${T.border}"/>
-<text x="32" y="42" font-family="${T.mono}" font-size="10.5" font-weight="700" letter-spacing="2" fill="${T.green}">COMMIT METRO</text>
-<text x="32" y="70" font-family="${T.sans}" font-size="22" font-weight="800" fill="${T.text}">Every line is a language, every stop a project</text>
+<text x="28" y="38" font-family="${T.mono}" font-size="10.5" font-weight="700" letter-spacing="2" fill="${T.green}">COMMIT METRO</text>
+<text x="${W - 28}" y="38" text-anchor="end" font-family="${T.mono}" font-size="9.5" fill="${T.muted}">${esc(summaryBits.join(" · "))}</text>
+<text x="28" y="66" font-family="${T.sans}" font-size="22" font-weight="800" fill="${T.text}">Every line is a language, every stop a project</text>
 ${tracks.join("\n")}
 ${trains.join("\n")}
 ${pills.join("\n")}
 ${stops.join("\n")}
 ${labels.join("\n")}
 ${hub}
-<text x="${W - 24}" y="${H - 18}" text-anchor="end" font-family="${T.mono}" font-size="9" fill="${T.muted}">${m.stats.repoTotal} projects · ${m.stats.repoPrivate} private · ${L.length} lines</text>`;
+${timelineBar}`;
+
   return svg(W, H, body, "Commit Metro map");
 }
 
 function renderInterchange(m, avatar) {
-  const W = 840, H = 178;
+  const W = 900;
+  const H = 178;
   const u = m.user;
-  const bio = wrap(u.bio || "", 58, 2);
-  const meta = [u.location, u.company, `${u.followers.totalCount} followers`, `${m.stats.repoTotal} repositories (${m.stats.repoPrivate} private)`].filter(Boolean).join("  ·  ");
+  const bio = wrap(u.bio || "", 62, 2);
+  const repoLabel = m.stats.repoPrivate
+    ? `${m.stats.repoTotal} projects (${m.stats.repoPrivate} private)`
+    : `${m.stats.repoTotal} projects`;
+  const meta = [u.location, u.company, `${u.followers.totalCount} followers`, repoLabel]
+    .filter(Boolean)
+    .join("  ·  ");
+
   const inner = `
-<text x="24" y="80" font-family="${T.sans}" font-size="27" font-weight="800" fill="${T.text}">${esc(trunc(u.name || u.login, 34))}</text>
+<text x="24" y="80" font-family="${T.sans}" font-size="27" font-weight="800" fill="${T.text}">${esc(trunc(u.name || u.login, 38))}</text>
 ${bio.map((l, i) => `<text x="24" y="${110 + i * 21}" font-family="${T.sans}" font-size="14.5" fill="${T.sub}">${esc(l)}</text>`).join("\n")}
-<text x="24" y="${bio.length ? 110 + bio.length * 21 + 4 : 112}" font-family="${T.mono}" font-size="10.5" fill="${T.muted}">${esc(trunc(meta, 92))}</text>
-<defs><clipPath id="av"><circle cx="${W - 90}" cy="${H / 2 + 4}" r="50"/></clipPath></defs>
-<circle cx="${W - 90}" cy="${H / 2 + 4}" r="54" fill="${T.accent}"/>
-${avatar ? `<image xlink:href="${avatar}" x="${W - 140}" y="${H / 2 - 46}" width="100" height="100" clip-path="url(#av)" preserveAspectRatio="xMidYMid slice"/>` : ""}`;
+<text x="24" y="${bio.length ? 110 + bio.length * 21 + 5 : 114}" font-family="${T.mono}" font-size="10.5" fill="${T.muted}">${esc(trunc(meta, 98))}</text>
+<defs><clipPath id="av"><circle cx="${W - 92}" cy="${H / 2 + 4}" r="50"/></clipPath></defs>
+<circle cx="${W - 92}" cy="${H / 2 + 4}" r="54" fill="${T.accent}"/>
+${avatar ? `<image xlink:href="${avatar}" x="${W - 142}" y="${H / 2 - 46}" width="100" height="100" clip-path="url(#av)" preserveAspectRatio="xMidYMid slice"/>` : ""}`;
+
   return svg(W, H, card(W, H, "Interchange", inner), `${u.name || u.login} — Interchange`);
 }
 
 function renderStation(r, idx, colors) {
-  const W = 412, H = 150;
-  const lang = r.primaryLanguage?.name;
-  const color = lang ? colors.get(lang) || r.primaryLanguage.color || "#8b949e" : "#8b949e";
-  const desc = wrap(r.desc || "A project in progress.", 50, 2);
+  const W = 442;
+  const H = 156;
+  const lang = r.lineLang;
+  const color = lang ? colors.get(lang) || r.lineColor || "#8b949e" : "#8b949e";
+  const desc = wrap(r.desc, 54, 2);
+
   const icon = lang
-    ? `<circle cx="${W - 38}" cy="34" r="15" fill="${color}"/><text x="${W - 38}" y="${34 + 4}" text-anchor="middle" font-family="${T.mono}" font-size="${abbr(lang).length > 2 ? 9 : 11}" font-weight="800" fill="${ink(color)}">${esc(abbr(lang))}</text>`
-    : `<circle cx="${W - 38}" cy="34" r="15" fill="#6e7681"/><text x="${W - 38}" y="38.5" text-anchor="middle" font-family="${T.sans}" font-size="13" font-weight="800" fill="#fff">×</text>`;
-  const lock = r.isPrivate ? `<g transform="translate(${W - 100},26)"><rect width="46" height="16" rx="8" fill="none" stroke="${T.muted}"/><text x="23" y="11.5" text-anchor="middle" font-family="${T.mono}" font-size="8.5" font-weight="700" fill="${T.muted}">PRIVATE</text></g>` : "";
+    ? `<circle cx="${W - 36}" cy="34" r="15" fill="${color}"/><text x="${W - 36}" y="${34 + (abbr(lang).length > 2 ? 3.5 : 4)}" text-anchor="middle" font-family="${T.mono}" font-size="${abbr(lang).length > 2 ? 8.5 : 11}" font-weight="800" fill="${ink(color)}">${esc(abbr(lang))}</text>`
+    : `<circle cx="${W - 36}" cy="34" r="15" fill="#6e7681"/><text x="${W - 36}" y="38.5" text-anchor="middle" font-family="${T.sans}" font-size="13" font-weight="800" fill="#fff">×</text>`;
+
+  const lockBadge = r.isPrivate
+    ? `<g transform="translate(${W - 118},25)">
+  <rect width="58" height="18" rx="9" fill="${T.bg}" stroke="${T.border}"/>
+  ${lockIcon(6, 4, 9.5, T.accent)}
+  <text x="19" y="12.2" font-family="${T.mono}" font-size="8" font-weight="700" fill="${T.sub}">PRIVATE</text>
+</g>`
+    : "";
+
+  const orgBadge = r.showOrg && !r.masked
+    ? `<text x="24" y="54" font-family="${T.mono}" font-size="9.5" fill="${T.muted}">${esc(trunc(r.owner?.login || "", 36))} /</text>`
+    : "";
+  const titleY = orgBadge ? 72 : 68;
+  const descY = orgBadge ? 92 : 90;
+
   let fx = 24;
   const foot = [];
-  foot.push(`<text x="${fx}" y="128" font-family="${T.mono}" font-size="10.5" fill="${T.muted}">★ ${fmt(r.stargazerCount)}</text>`);
+  foot.push(`<text x="${fx}" y="134" font-family="${T.mono}" font-size="10.5" fill="${T.muted}">★ ${fmt(r.stargazerCount)}</text>`);
   fx += 34 + String(fmt(r.stargazerCount)).length * 6;
-  foot.push(`<text x="${fx}" y="128" font-family="${T.mono}" font-size="10.5" fill="${T.muted}">⑂ ${fmt(r.forkCount)}</text>`);
+  foot.push(`<text x="${fx}" y="134" font-family="${T.mono}" font-size="10.5" fill="${T.muted}">⑂ ${fmt(r.forkCount)}</text>`);
   fx += 34 + String(fmt(r.forkCount)).length * 6;
   if (lang) {
-    foot.push(langChip(fx, 118, lang, color, 13));
-    foot.push(`<text x="${fx + 19}" y="128" font-family="${T.mono}" font-size="10.5" fill="${T.muted}">${esc(lang)}</text>`);
+    foot.push(langChip(fx, 124, lang, color, 13));
+    foot.push(`<text x="${fx + 19}" y="134" font-family="${T.mono}" font-size="10.5" fill="${T.muted}">${esc(trunc(lang, 16))}</text>`);
   }
-  const inner = `${icon}${lock}
-<text x="24" y="70" font-family="${T.mono}" font-size="14" font-weight="800" fill="${T.text}">${esc(trunc(r.label, 40))}</text>
-${desc.map((l, i) => `<text x="24" y="${92 + i * 15}" font-family="${T.sans}" font-size="11.5" fill="${T.sub}">${esc(l)}</text>`).join("\n")}
+  const dateStr = fmtMonthYear(r.activeAt);
+  if (dateStr) {
+    foot.push(`<text x="${W - 24}" y="134" text-anchor="end" font-family="${T.mono}" font-size="9.5" fill="${T.muted}">${esc(dateStr)}</text>`);
+  }
+
+  const inner = `${icon}${lockBadge}${orgBadge}
+<text x="24" y="${titleY}" font-family="${T.mono}" font-size="14.5" font-weight="800" fill="${T.text}">${esc(trunc(r.label, 38))}</text>
+${desc.map((l, i) => `<text x="24" y="${descY + i * 16}" font-family="${T.sans}" font-size="11.5" fill="${T.sub}">${esc(l)}</text>`).join("\n")}
 ${foot.join("\n")}`;
+
   return svg(W, H, card(W, H, `Station ${String(idx + 1).padStart(2, "0")}`, inner), `Station ${idx + 1}: ${r.label}`);
 }
 
 function renderLines(m) {
-  const W = 840, rows = m.langBars.length, H = 70 + rows * 30 + 14;
+  const W = 900;
+  const rows = m.langBars.length;
+  const H = 72 + rows * 30 + 14;
   const max = Math.max(...m.langBars.map((l) => l.pct), 1);
-  const bx = 190, bw = 520;
+  const bx = 200;
+  const bw = 576;
+
   const inner = m.langBars
     .map((l, i) => {
-      const y = 66 + i * 30;
+      const y = 68 + i * 30;
+      const barW = Math.max(10, (l.pct / max) * bw).toFixed(1);
+      const pctText = l.pct < 1 ? `${l.pct.toFixed(1)}%` : `${Math.round(l.pct)}%`;
       return `${langChip(24, y - 8, l.name, l.color, 16)}
-<text x="50" y="${y + 4.5}" font-family="${T.sans}" font-size="12.5" font-weight="700" fill="${T.text}">${esc(l.name)}</text>
+<text x="50" y="${y + 4.5}" font-family="${T.sans}" font-size="12.5" font-weight="700" fill="${T.text}">${esc(trunc(l.name, 18))}</text>
 <rect x="${bx}" y="${y - 5}" width="${bw}" height="10" rx="5" fill="${T.track}"/>
-<rect x="${bx}" y="${y - 5}" width="${Math.max(10, (l.pct / max) * bw).toFixed(1)}" height="10" rx="5" fill="${l.color}">
-  <animate attributeName="width" values="0;0;${Math.max(10, (l.pct / max) * bw).toFixed(1)}" keyTimes="0;${(i * 0.08).toFixed(2)};1" dur="1.6s" fill="freeze"/>
+<rect x="${bx}" y="${y - 5}" width="${barW}" height="10" rx="5" fill="${l.color}">
+  <animate attributeName="width" values="0;0;${barW}" keyTimes="0;${Math.min(0.6, i * 0.07).toFixed(2)};1" dur="1.6s" fill="freeze"/>
 </rect>
-<text x="${W - 24}" y="${y + 4}" text-anchor="end" font-family="${T.mono}" font-size="11" fill="${T.sub}">${l.pct.toFixed(l.pct < 1 ? 1 : 0)}%</text>`;
+<text x="${W - 24}" y="${y + 4}" text-anchor="end" font-family="${T.mono}" font-size="11" fill="${T.sub}">${pctText}</text>`;
     })
     .join("\n");
-  const note = `<text x="${W - 24}" y="34" text-anchor="end" font-family="${T.mono}" font-size="9" fill="${T.muted}">by bytes · public + private</text>`;
+
+  const note = `<text x="${W - 24}" y="34" text-anchor="end" font-family="${T.mono}" font-size="9" fill="${T.muted}">by bytes · public + private + orgs</text>`;
   return svg(W, H, card(W, H, "Lines", note + inner), "Languages");
 }
 
 function renderTimetable(m) {
-  const W = 840, H = 200;
-  const cs = 12, gap = 4, gx = 24, gy = 52;
+  const W = 900;
+  const H = 204;
+  const cs = 13;
+  const gap = 4;
+  const gx = 24;
+  const gy = 52;
   const lv = { NONE: 0, FIRST_QUARTILE: 1, SECOND_QUARTILE: 2, THIRD_QUARTILE: 3, FOURTH_QUARTILE: 4 };
+
   const cells = [];
   m.weeks.forEach((w, wi) => {
     w.contributionDays.forEach((d) => {
       const dow = new Date(d.date + "T00:00:00Z").getUTCDay();
-      const x = gx + wi * (cs + gap), y = gy + dow * (cs + gap);
-      cells.push(`<rect x="${x}" y="${y}" width="${cs}" height="${cs}" rx="2.5" fill="${HEAT[lv[d.contributionLevel] ?? 0]}"><title>${d.date}: ${d.contributionCount} contributions</title></rect>`);
+      const x = gx + wi * (cs + gap);
+      const y = gy + dow * (cs + gap);
+      cells.push(
+        `<rect x="${x}" y="${y}" width="${cs}" height="${cs}" rx="2.5" fill="${HEAT[lv[d.contributionLevel] ?? 0]}"><title>${d.date}: ${d.contributionCount} contributions</title></rect>`
+      );
     });
   });
-  const sx = gx + 26 * (cs + gap) + 40;
+
+  const sx = gx + 26 * (cs + gap) + 46;
   const stat = (y, k, v, unit = "") =>
     `<text x="${sx}" y="${y}" font-family="${T.mono}" font-size="9" font-weight="700" letter-spacing="1.4" fill="${T.muted}">${k}</text>
-<text x="${sx}" y="${y + 24}" font-family="${T.sans}" font-size="21" font-weight="800" fill="${T.text}">${v}${unit ? `<tspan dx="6" font-size="15" fill="${T.sub}">${unit}</tspan>` : ""}</text>`;
+<text x="${sx}" y="${y + 24}" font-family="${T.sans}" font-size="21" font-weight="800" fill="${T.text}">${v}${unit ? `<tspan dx="6" font-size="14.5" font-weight="600" fill="${T.sub}">${unit}</tspan>` : ""}</text>`;
+
   const s = m.stats;
   const legend = HEAT.map((c, i) => `<rect x="${gx + 46 + i * 15}" y="${H - 26}" width="11" height="11" rx="2" fill="${c}"/>`).join("");
+
   const inner = `${cells.join("\n")}
 <text x="${gx}" y="${H - 16.5}" font-family="${T.mono}" font-size="9" fill="${T.muted}">less</text>${legend}<text x="${gx + 46 + 5 * 15 + 4}" y="${H - 16.5}" font-family="${T.mono}" font-size="9" fill="${T.muted}">more</text>
-${stat(62, "RUNNING FOR", s.current, s.current === 1 ? "day" : "days")}
-${stat(112, "LONGEST SERVICE", s.longest, s.longest === 1 ? "day" : "days")}
-${stat(162, `TRIPS IN ${new Date().getUTCFullYear()}`, s.yearTotal.toLocaleString("en-US"), s.yearPrivate ? `(${s.yearPrivate.toLocaleString("en-US")} private)` : "")}`;
+${stat(64, "RUNNING FOR", s.current, s.current === 1 ? "day" : "days")}
+${stat(114, "LONGEST SERVICE", s.longest, s.longest === 1 ? "day" : "days")}
+${stat(164, `TRIPS IN ${s.yearNum}`, s.yearTotal.toLocaleString("en-US"), s.yearPrivate ? `(${s.yearPrivate.toLocaleString("en-US")} private)` : "")}`;
+
   return svg(W, H, card(W, H, "Timetable · 26 weeks", inner), "Contribution timetable");
 }
 
 // ───────────────────────────── main ─────────────────────────────
 const raw = await fetchAll();
-const m = process_(raw);
+const m = processData(raw);
 const avatar = await avatarData(m.user.avatarUrl);
 await fs.mkdir(OUT, { recursive: true });
+
+// Remove stale station SVGs when stationCount changes.
+for (const f of await fs.readdir(OUT)) {
+  if (/^station-\d+\.svg$/.test(f)) await fs.unlink(path.join(OUT, f));
+}
 
 const files = {
   "map.svg": renderMap(m, avatar),
@@ -479,16 +1022,40 @@ const files = {
   "lines.svg": renderLines(m),
   "timetable.svg": renderTimetable(m),
 };
-m.stations.forEach((r, i) => (files[`station-${i + 1}.svg`] = renderStation(r, i, m.colors)));
-for (const [f, c] of Object.entries(files)) await fs.writeFile(path.join(OUT, f), c);
+m.stations.forEach((r, i) => {
+  files[`station-${i + 1}.svg`] = renderStation(r, i, m.colors);
+});
+for (const [f, c] of Object.entries(files)) {
+  await fs.writeFile(path.join(OUT, f), c);
+}
 
-// Rewrite the station block of README so cards link to their repos.
+// Update the STATIONS block in README.md (2-column rows; private stations stay non-clickable).
 const readmePath = path.join(ROOT, "README.md");
 let readme = await fs.readFile(readmePath, "utf8").catch(() => "");
-const block = m.stations
-  .map((r, i) => `<a href="${r.link}"><img src="metro/station-${i + 1}.svg" width="49%" alt="${esc(r.label)}"/></a>`)
-  .join("\n");
-readme = readme.replace(/(<!-- STATIONS:START -->)[\s\S]*?(<!-- STATIONS:END -->)/, `$1\n${block}\n$2`);
+const rows = [];
+for (let i = 0; i < m.stations.length; i += 2) {
+  const pair = m.stations.slice(i, i + 2).map((r, offset) => {
+    const idx = i + offset + 1;
+    const img = `<img src="metro/station-${idx}.svg" width="49%" alt="${esc(r.label)}"/>`;
+    return r.link ? `<a href="${esc(r.link)}">${img}</a>` : img;
+  });
+  rows.push(`<p align="center">\n  ${pair.join("\n  ")}\n</p>`);
+}
+readme = readme.replace(
+  /(<!-- STATIONS:START -->)[\s\S]*?(<!-- STATIONS:END -->)/,
+  `$1\n${rows.join("\n")}\n$2`
+);
 await fs.writeFile(readmePath, readme);
 
-console.log(`✔ Commit Metro generated: ${m.stats.repoTotal} repos (${m.stats.repoPrivate} private), ${m.lines.length} lines, ${m.stations.length} stations, ${m.stats.yearTotal} contributions this year.`);
+console.log(
+  `✔ Commit Metro generated: ${m.stats.repoTotal} projects (${m.stats.repoPrivate} private, ${m.stats.orgCollabCount} org/collab), ` +
+    `${m.lines.length} lines [${m.lines.map((l) => l.name).join(", ")}], ` +
+    `${m.stations.length} stations, ${m.stats.yearTotal} contributions in ${m.stats.yearNum} (${m.stats.yearPrivate} private).`
+);
+console.log(`  Skipped: ${m.stats.skippedForks} untouched forks, ${m.stats.skippedUntouchedOrg} untouched org/collab repos.`);
+if (m.stats.repoPrivate === 0 && m.stats.yearPrivate > 0) {
+  console.warn(
+    `⚠ Detected ${m.stats.yearPrivate} private contributions, but 0 private repos were accessible with this token.\n` +
+      `  Add secret METRO_TOKEN (Classic PAT with scopes: repo, read:user, read:org) in repo Settings -> Secrets -> Actions.`
+  );
+}

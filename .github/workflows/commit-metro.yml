@@ -2,8 +2,14 @@ name: Commit Metro
 
 on:
   schedule:
-    - cron: "0 */6 * * *" # every 6 hours
+    # Auto-sync every 30 minutes (catches pushes on any personal/private/org repo, bio, stars, contributions)
+    - cron: "*/30 * * * *"
+  # Instant update when triggered from another repo/org workflow or webhook
+  repository_dispatch:
+    types: [refresh-metro]
+  # Manual trigger from the Actions tab
   workflow_dispatch:
+  # Regenerate immediately when config, generator, or workflow changes
   push:
     branches: [main]
     paths:
@@ -24,6 +30,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - uses: actions/setup-node@v4
         with:
@@ -31,19 +39,20 @@ jobs:
 
       - name: Generate Commit Metro SVGs
         env:
-          # PAT (classic: scopes `repo` + `read:user`) so private repos & contributions are included.
-          # Falls back to the built-in token (public data only) if the secret is missing.
+          # Classic PAT with scopes `repo` + `read:user` + `read:org` so private & org repos are included.
+          # Falls back to GITHUB_TOKEN (public data only) when secret is not configured.
           METRO_TOKEN: ${{ secrets.METRO_TOKEN || secrets.GITHUB_TOKEN }}
         run: node scripts/commit-metro/generate.mjs
 
-      - name: Commit changes
+      - name: Commit changes (only if data changed)
         run: |
           git config user.name "commit-metro[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add metro README.md
           if git diff --cached --quiet; then
-            echo "No changes."
+            echo "No changes detected — skipping commit."
           else
             git commit -m "chore(metro): refresh Commit Metro [skip ci]"
-            git push
+            git pull --rebase origin main
+            git push origin main
           fi
