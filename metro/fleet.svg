@@ -1,0 +1,179 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="210" viewBox="0 0 900 210" role="img" aria-label="Tech Stack Fleet">
+<title>Tech Stack Fleet</title>
+<defs><clipPath id="cc"><rect width="900" height="210" rx="12"/></clipPath></defs>
+<g clip-path="url(#cc)">
+  <rect width="900" height="210" fill="#10141b"/>
+  <rect width="900" height="5" fill="#e8552d"/>
+</g>
+<rect x="0.5" y="0.5" width="899" height="209" rx="12" fill="none" stroke="#262c36"/>
+<g transform="translate(24,30)">
+  <circle cx="7" cy="0" r="7" fill="#e8552d"/>
+  <text x="7" y="3.5" text-anchor="middle" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="9" font-weight="800" fill="#fff">M</text>
+  <text x="21" y="4" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#f0f3f6">Fleet · Tech Stack</text>
+</g>
+<text x="876" y="34" text-anchor="end" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9" fill="#8b949e">systems · cloud · networking · secops</text>
+<circle cx="29" cy="69" r="4.5" fill="#00ADD8"/><text x="41" y="72.5" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9.5" font-weight="800" letter-spacing="1" fill="#c9d1d9">BACKEND &amp; DATA</text>
+<g transform="translate(176,58)">
+  <rect width="31" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#00ADD8"/>
+  <text x="17.0" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">Go</text>
+</g>
+<g transform="translate(214,58)">
+  <rect width="44" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#00ADD8"/>
+  <text x="23.5" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">Rust</text>
+</g>
+<g transform="translate(265,58)">
+  <rect width="37" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#00ADD8"/>
+  <text x="20.0" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">C++</text>
+</g>
+<g transform="translate(309,58)">
+  <rect width="56" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#00ADD8"/>
+  <text x="29.5" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">Python</text>
+</g>
+<g transform="translate(372,58)">
+  <rect width="44" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#00ADD8"/>
+  <text x="23.5" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">Java</text>
+</g>
+<g transform="translate(423,58)">
+  <rect width="81" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#00ADD8"/>
+  <text x="42.0" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">PostgreSQL</text>
+</g>
+<g transform="translate(511,58)">
+  <rect width="107" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#00ADD8"/>
+  <text x="55.0" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">Valkey / Redis</text>
+</g>
+<g transform="translate(625,58)">
+  <rect width="50" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#00ADD8"/>
+  <text x="26.5" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">Kafka</text>
+</g>
+<g transform="translate(682,58)">
+  <rect width="69" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#00ADD8"/>
+  <text x="36.0" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">RabbitMQ</text>
+</g>
+<circle cx="29" cy="105" r="4.5" fill="#e8552d"/><text x="41" y="108.5" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9.5" font-weight="800" letter-spacing="1" fill="#c9d1d9">CLOUD &amp; INFRA</text>
+<g transform="translate(176,94)">
+  <rect width="81" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#e8552d"/>
+  <text x="42.0" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">Proxmox VE</text>
+</g>
+<g transform="translate(264,94)">
+  <rect width="37" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#e8552d"/>
+  <text x="20.0" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">OVN</text>
+</g>
+<g transform="translate(308,94)">
+  <rect width="94" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#e8552d"/>
+  <text x="48.5" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">Docker Swarm</text>
+</g>
+<g transform="translate(409,94)">
+  <rect width="144" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#e8552d"/>
+  <text x="73.5" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">Terraform / OpenTofu</text>
+</g>
+<g transform="translate(560,94)">
+  <rect width="63" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#e8552d"/>
+  <text x="33.0" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">Ansible</text>
+</g>
+<g transform="translate(630,94)">
+  <rect width="56" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#e8552d"/>
+  <text x="29.5" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">Packer</text>
+</g>
+<g transform="translate(693,94)">
+  <rect width="94" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#e8552d"/>
+  <text x="48.5" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">Grafana LGTM</text>
+</g>
+<g transform="translate(794,94)">
+  <rect width="56" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#e8552d"/>
+  <text x="29.5" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">Fedora</text>
+</g>
+<circle cx="29" cy="141" r="4.5" fill="#89e051"/><text x="41" y="144.5" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9.5" font-weight="800" letter-spacing="1" fill="#c9d1d9">NETWORK &amp; IOT</text>
+<g transform="translate(176,130)">
+  <rect width="107" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#89e051"/>
+  <text x="55.0" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">WireGuard Mesh</text>
+</g>
+<g transform="translate(290,130)">
+  <rect width="107" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#89e051"/>
+  <text x="55.0" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">Cisco OSPF/BGP</text>
+</g>
+<g transform="translate(404,130)">
+  <rect width="69" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#89e051"/>
+  <text x="36.0" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">OPNsense</text>
+</g>
+<g transform="translate(480,130)">
+  <rect width="50" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#89e051"/>
+  <text x="26.5" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">Caddy</text>
+</g>
+<g transform="translate(537,130)">
+  <rect width="63" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#89e051"/>
+  <text x="33.0" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">Traefik</text>
+</g>
+<g transform="translate(607,130)">
+  <rect width="50" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#89e051"/>
+  <text x="26.5" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">ESP32</text>
+</g>
+<g transform="translate(664,130)">
+  <rect width="44" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#89e051"/>
+  <text x="23.5" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">MQTT</text>
+</g>
+<g transform="translate(715,130)">
+  <rect width="44" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#89e051"/>
+  <text x="23.5" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">LoRa</text>
+</g>
+<circle cx="29" cy="177" r="4.5" fill="#f34b7d"/><text x="41" y="180.5" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9.5" font-weight="800" letter-spacing="1" fill="#c9d1d9">SECOPS</text>
+<g transform="translate(176,166)">
+  <rect width="88" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#f34b7d"/>
+  <text x="45.5" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">Pen-Testing</text>
+</g>
+<g transform="translate(271,166)">
+  <rect width="44" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#f34b7d"/>
+  <text x="23.5" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">SIEM</text>
+</g>
+<g transform="translate(322,166)">
+  <rect width="75" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#f34b7d"/>
+  <text x="39.0" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">IDS / IPS</text>
+</g>
+<g transform="translate(404,166)">
+  <rect width="132" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#f34b7d"/>
+  <text x="67.5" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">Cryptography / PKI</text>
+</g>
+<g transform="translate(543,166)">
+  <rect width="50" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#f34b7d"/>
+  <text x="26.5" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">OWASP</text>
+</g>
+<g transform="translate(600,166)">
+  <rect width="126" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#f34b7d"/>
+  <text x="64.5" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">Incident Response</text>
+</g>
+<g transform="translate(733,166)">
+  <rect width="50" height="22" rx="6" fill="#0d1117" stroke="#262c36"/>
+  <rect width="3" height="14" x="1.5" y="4" rx="1.5" fill="#f34b7d"/>
+  <text x="26.5" y="14.5" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="600" fill="#f0f3f6">OSINT</text>
+</g>
+</svg>

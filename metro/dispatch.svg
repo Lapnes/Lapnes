@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="204" viewBox="0 0 900 204" role="img" aria-label="Currently &amp; Community">
+<title>Currently &amp; Community</title>
+<defs><clipPath id="cc"><rect width="900" height="204" rx="12"/></clipPath></defs>
+<g clip-path="url(#cc)">
+  <rect width="900" height="204" fill="#10141b"/>
+  <rect width="900" height="5" fill="#e8552d"/>
+</g>
+<rect x="0.5" y="0.5" width="899" height="203" rx="12" fill="none" stroke="#262c36"/>
+<g transform="translate(24,30)">
+  <circle cx="7" cy="0" r="7" fill="#e8552d"/>
+  <text x="7" y="3.5" text-anchor="middle" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="9" font-weight="800" fill="#fff">M</text>
+  <text x="21" y="4" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#f0f3f6">Service Notice · Currently &amp; Community</text>
+</g>
+<text x="876" y="34" text-anchor="end" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9" fill="#8b949e">active status &amp; community</text>
+<circle cx="29" cy="59" r="3.5" fill="#e8552d"/>
+<text x="40" y="62" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9" font-weight="700" letter-spacing="1.4" fill="#8b949e">BUILDING</text>
+<text x="24" y="80" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#f0f3f6">REGtee Cloud IaaS/PaaS · Enclavitzy · Chronicles-OJ</text>
+<circle cx="29" cy="105" r="3.5" fill="#00ADD8"/>
+<text x="40" y="108" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9" font-weight="700" letter-spacing="1.4" fill="#8b949e">EXPLORING</text>
+<text x="24" y="126" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#f0f3f6">Local LLMs · Rust · OVN Networking · WebAssembly</text>
+<circle cx="29" cy="151" r="3.5" fill="#3fb950"><animate attributeName="opacity" values="1;0.35;1" dur="2.2s" repeatCount="indefinite"/></circle>
+<text x="40" y="154" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9" font-weight="700" letter-spacing="1.4" fill="#8b949e">OPEN TO</text>
+<text x="24" y="172" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#f0f3f6">Collaborations · Open-Source · Freelance Backend &amp; In…</text>
+<line x1="456" y1="50" x2="456" y2="184" stroke="#262c36" stroke-width="1" stroke-dasharray="3 4"/>
+<text x="480" y="62" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="800" fill="#f0f3f6">HMIF UNTAN</text>
+<text x="480" y="80" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11.5" fill="#c9d1d9">ML Workshop Organizer · Software &amp; Web Dev Study Club…</text>
+<text x="480" y="108" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="800" fill="#f0f3f6">Remaja Mujahidin Kalbar</text>
+<text x="480" y="126" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11.5" fill="#c9d1d9">Active Member — Youth &amp; Community Development, West K…</text>
+<text x="480" y="154" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10" font-weight="800" fill="#f0f3f6">Roots</text>
+<text x="480" y="172" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11.5" fill="#c9d1d9">Competitive Programming (C++) → Systems &amp; Backend Eng…</text>
+</svg>
