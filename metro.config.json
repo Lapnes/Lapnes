@@ -25,7 +25,7 @@
   "infraLineName": "Infra / Docs",
 
   "maxLines": 8,
-  "maxLanguagesInBars": 9,
+  "maxLanguagesInBars": 8,
   "pinLanguages": ["Go", "Rust"],
   "_pinLanguages_hint": "Opsional: kunci bahasa tertentu agar selalu dapat jalur di peta, contoh: [\"Rust\", \"Go\"]",
 
@@ -34,7 +34,7 @@
   },
   "_languageOverrides_hint": "Opsional: override jalur bahasa untuk repo tertentu, contoh: {\"REGtee-HyTerra\": \"Go\"}",
 
-  "excludeLanguages": [],
+  "excludeLanguages": ["HTML", "CSS"],
 
   "stationCount": 6,
   "stations": [
