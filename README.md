@@ -34,13 +34,18 @@
 
 <img src="metro/lines.svg" width="100%" alt="Lines — languages across public, private & org repos"/>
 
+<img src="metro/fleet.svg" width="100%" alt="Fleet — Backend, Cloud Infrastructure, Networking, IoT & SecOps"/>
+
 <img src="metro/timetable.svg" width="100%" alt="Timetable — contributions over the last 26 weeks"/>
+
+<img src="metro/dispatch.svg" width="100%" alt="Service Notice — Currently Building, Exploring & Community"/>
 
 <p>
   <a href="https://github.com/Lapnes">GitHub</a> ·
   <a href="https://porto.tenzly.codes">Website</a> ·
   <a href="https://hub.docker.com/u/tenzly">Docker Hub</a> ·
-  <a href="https://linkedin.com/in/ragil-amirzaky">LinkedIn</a>
+  <a href="https://linkedin.com/in/ragil-amirzaky">LinkedIn</a> ·
+  <a href="https://beacons.ai/lapness21">Beacons</a>
 </p>
 
 <sub>Commit Metro · every line is a language, every stop a project · auto-synced from public, private &amp; org activity</sub>

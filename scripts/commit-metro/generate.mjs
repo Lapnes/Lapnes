@@ -1082,7 +1082,8 @@ ${timelineBar}`;
 
 function renderInterchange(m, avatar) {
   const W = 900;
-  const H = 178;
+  const role = config.profile?.role || "";
+  const H = role ? 196 : 178;
   const u = m.user;
   const bio = wrap(u.bio || "", 62, 2);
   const repoLabel = m.stats.repoPrivate
@@ -1092,15 +1093,105 @@ function renderInterchange(m, avatar) {
     .filter(Boolean)
     .join("  ·  ");
 
+  const bioStartY = role ? 124 : 110;
+  const metaY = bio.length ? bioStartY + bio.length * 20 + 6 : bioStartY + 6;
+  const roleLine = role
+    ? `<text x="24" y="100" font-family="${T.mono}" font-size="11" font-weight="700" fill="${T.green}">${esc(trunc(role, 78))}</text>`
+    : "";
+
   const inner = `
-<text x="24" y="80" font-family="${T.sans}" font-size="27" font-weight="800" fill="${T.text}">${esc(trunc(u.name || u.login, 38))}</text>
-${bio.map((l, i) => `<text x="24" y="${110 + i * 21}" font-family="${T.sans}" font-size="14.5" fill="${T.sub}">${esc(l)}</text>`).join("\n")}
-<text x="24" y="${bio.length ? 110 + bio.length * 21 + 5 : 114}" font-family="${T.mono}" font-size="10.5" fill="${T.muted}">${esc(trunc(meta, 98))}</text>
+<text x="24" y="76" font-family="${T.sans}" font-size="27" font-weight="800" fill="${T.text}">${esc(trunc(u.name || u.login, 38))}</text>
+${roleLine}
+${bio.map((l, i) => `<text x="24" y="${bioStartY + i * 20}" font-family="${T.sans}" font-size="14" fill="${T.sub}">${esc(l)}</text>`).join("\n")}
+<text x="24" y="${metaY}" font-family="${T.mono}" font-size="10.5" fill="${T.muted}">${esc(trunc(meta, 98))}</text>
 <defs><clipPath id="av"><circle cx="${W - 92}" cy="${H / 2 + 4}" r="50"/></clipPath></defs>
 <circle cx="${W - 92}" cy="${H / 2 + 4}" r="54" fill="${T.accent}"/>
 ${avatar ? `<image xlink:href="${avatar}" x="${W - 142}" y="${H / 2 - 46}" width="100" height="100" clip-path="url(#av)" preserveAspectRatio="xMidYMid slice"/>` : ""}`;
 
   return svg(W, H, card(W, H, "Interchange", inner), `${u.name || u.login} — Interchange`);
+}
+
+function renderFleet(fleet = []) {
+  const W = 900;
+  const padX = 24;
+  const chipStartX = 176;
+  const maxX = W - 24;
+  const chipH = 22;
+  const gapX = 7;
+  const gapY = 7;
+
+  let y = 58;
+  const blocks = [];
+
+  for (const group of fleet) {
+    const color = group.color || T.accent;
+    // Group label + colored metro track indicator
+    blocks.push(
+      `<circle cx="${padX + 5}" cy="${y + 11}" r="4.5" fill="${color}"/>` +
+      `<text x="${padX + 17}" y="${y + 14.5}" font-family="${T.mono}" font-size="9.5" font-weight="800" letter-spacing="1" fill="${T.sub}">${esc(group.label)}</text>`
+    );
+
+    let cx = chipStartX;
+    let cy = y;
+    for (const item of group.items || []) {
+      const text = String(item);
+      const pw = Math.ceil(text.length * 6.3 + 18);
+      if (cx + pw > maxX && cx > chipStartX) {
+        cx = chipStartX;
+        cy += chipH + gapY;
+      }
+      blocks.push(`<g transform="translate(${cx},${cy})">
+  <rect width="${pw}" height="${chipH}" rx="6" fill="${T.bg}" stroke="${T.border}"/>
+  <rect width="3" height="${chipH - 8}" x="1.5" y="4" rx="1.5" fill="${color}"/>
+  <text x="${(pw / 2 + 1.5).toFixed(1)}" y="14.5" text-anchor="middle" font-family="${T.mono}" font-size="10" font-weight="600" fill="${T.text}">${esc(text)}</text>
+</g>`);
+      cx += pw + gapX;
+    }
+    y = cy + chipH + 14;
+  }
+
+  const H = y + 8;
+  const note = `<text x="${W - 24}" y="34" text-anchor="end" font-family="${T.mono}" font-size="9" fill="${T.muted}">systems · cloud · networking · secops</text>`;
+  return svg(W, H, card(W, H, "Fleet · Tech Stack", note + "\n" + blocks.join("\n")), "Tech Stack Fleet");
+}
+
+function renderDispatch(dispatch) {
+  const W = 900;
+  const H = 204;
+  const midX = 456;
+
+  const leftItems = [
+    { k: "BUILDING", v: dispatch.building, color: T.accent },
+    { k: "EXPLORING", v: dispatch.exploring, color: "#00ADD8" },
+    { k: "OPEN TO", v: dispatch.openTo, color: T.green, pulse: true },
+  ].filter((x) => x.v);
+
+  const left = leftItems
+    .map((item, idx) => {
+      const y = 62 + idx * 46;
+      const dot = item.pulse
+        ? `<circle cx="29" cy="${y - 3}" r="3.5" fill="${item.color}"><animate attributeName="opacity" values="1;0.35;1" dur="2.2s" repeatCount="indefinite"/></circle>`
+        : `<circle cx="29" cy="${y - 3}" r="3.5" fill="${item.color}"/>`;
+      return `${dot}
+<text x="40" y="${y}" font-family="${T.mono}" font-size="9" font-weight="700" letter-spacing="1.4" fill="${T.muted}">${esc(item.k)}</text>
+<text x="24" y="${y + 18}" font-family="${T.sans}" font-size="12.5" font-weight="600" fill="${T.text}">${esc(trunc(item.v, 54))}</text>`;
+    })
+    .join("\n");
+
+  const comm = (dispatch.community || []).slice(0, 3);
+  const right = comm
+    .map((c, idx) => {
+      const y = 62 + idx * 46;
+      return `<text x="${midX + 24}" y="${y}" font-family="${T.mono}" font-size="10" font-weight="800" fill="${T.text}">${esc(trunc(c.org, 40))}</text>
+<text x="${midX + 24}" y="${y + 18}" font-family="${T.sans}" font-size="11.5" fill="${T.sub}">${esc(trunc(c.role, 54))}</text>`;
+    })
+    .join("\n");
+
+  const note = `<text x="${W - 24}" y="34" text-anchor="end" font-family="${T.mono}" font-size="9" fill="${T.muted}">active status &amp; community</text>`;
+  const divider = `<line x1="${midX}" y1="50" x2="${midX}" y2="${H - 20}" stroke="${T.border}" stroke-width="1" stroke-dasharray="3 4"/>`;
+  const inner = `${note}\n${left}\n${divider}\n${right}`;
+
+  return svg(W, H, card(W, H, "Service Notice · Currently & Community", inner), "Currently & Community");
 }
 
 function renderStation(r, idx, colors) {
@@ -1237,6 +1328,12 @@ const files = {
   "lines.svg": renderLines(m),
   "timetable.svg": renderTimetable(m),
 };
+if (config.profile?.fleet?.length) {
+  files["fleet.svg"] = renderFleet(config.profile.fleet);
+}
+if (config.profile?.dispatch) {
+  files["dispatch.svg"] = renderDispatch(config.profile.dispatch);
+}
 m.stations.forEach((r, i) => {
   files[`station-${i + 1}.svg`] = renderStation(r, i, m.colors);
 });

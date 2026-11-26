@@ -70,5 +70,50 @@
       "language": "Rust",
       "description": "Ultra-lightweight Rust/Tauri v2 exam lockdown browser & native C++23 IDE for DOMjudge contests."
     }
+  },
+
+  "profile": {
+    "role": "Backend Engineer · Infra Architect · SecOps · Ex-Competitive Programmer",
+    "fleet": [
+      {
+        "label": "BACKEND & DATA",
+        "color": "#00ADD8",
+        "items": ["Go", "Rust", "C++", "Python", "Java", "PostgreSQL", "Valkey / Redis", "Kafka", "RabbitMQ"]
+      },
+      {
+        "label": "CLOUD & INFRA",
+        "color": "#e8552d",
+        "items": ["Proxmox VE", "OVN", "Docker Swarm", "Terraform / OpenTofu", "Ansible", "Packer", "Grafana LGTM", "Fedora"]
+      },
+      {
+        "label": "NETWORK & IOT",
+        "color": "#89e051",
+        "items": ["WireGuard Mesh", "Cisco OSPF/BGP", "OPNsense", "Caddy", "Traefik", "ESP32", "MQTT", "LoRa"]
+      },
+      {
+        "label": "SECOPS",
+        "color": "#f34b7d",
+        "items": ["Pen-Testing", "SIEM", "IDS / IPS", "Cryptography / PKI", "OWASP", "Incident Response", "OSINT"]
+      }
+    ],
+    "dispatch": {
+      "building": "REGtee Cloud IaaS/PaaS · Enclavitzy · Chronicles-OJ",
+      "exploring": "Local LLMs · Rust · OVN Networking · WebAssembly",
+      "openTo": "Collaborations · Open-Source · Freelance Backend & Infra",
+      "community": [
+        {
+          "org": "HMIF UNTAN",
+          "role": "ML Workshop Organizer · Software & Web Dev Study Club Mentor"
+        },
+        {
+          "org": "Remaja Mujahidin Kalbar",
+          "role": "Active Member — Youth & Community Development, West Kalimantan"
+        },
+        {
+          "org": "Roots",
+          "role": "Competitive Programming (C++) → Systems & Backend Engineering"
+        }
+      ]
+    }
   }
 }
