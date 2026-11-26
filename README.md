@@ -74,4 +74,4 @@
   <a href="https://beacons.ai/lapness21">Beacons</a>
 </p>
 
-<sub>Commit Metro · every line is a language, every stop a project · auto-synced from public, private &amp; org activity</sub>
+<sub>Commit Metro · every line is a language, every stop a project ·</sub>
