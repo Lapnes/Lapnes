@@ -71,7 +71,8 @@
   <a href="https://porto.tenzly.codes">Website</a> ·
   <a href="https://hub.docker.com/u/tenzly">Docker Hub</a> ·
   <a href="https://linkedin.com/in/ragil-amirzaky">LinkedIn</a> ·
-  <a href="https://beacons.ai/lapness21">Beacons</a>
+  <a href="https://beacons.ai/lapness21">Beacons</a> ·
+  <a href="mailto:contact@tenzly.pro">Email</a>
 </p>
 
 <sub>Commit Metro · every line is a language, every stop a project ·</sub>
