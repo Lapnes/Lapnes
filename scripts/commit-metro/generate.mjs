@@ -36,20 +36,44 @@ const INFRA_LINE = config.infraLineName || "Infra / Docs";
 const INFRA_COLOR = "#8b949e";
 
 // ───────────────────────────── theme ─────────────────────────────
-const T = {
-  bg: "#0d1117",
-  card: "#10141b",
-  border: "#262c36",
-  accent: "#e8552d",
-  text: "#f0f3f6",
-  sub: "#c9d1d9",
-  muted: "#8b949e",
-  track: "#30363d",
-  green: "#3fb950",
+const FONTS = {
   sans: "'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif",
   mono: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace",
 };
-const HEAT = ["#1b2029", "#5c2615", "#94361a", "#d24f2a", "#f3906e"];
+const THEMES = {
+  dark: {
+    ...FONTS,
+    bg: "#0d1117",
+    chipBg: "#0d1117",
+    card: "#10141b",
+    border: "#262c36",
+    accent: "#e8552d",
+    text: "#f0f3f6",
+    sub: "#c9d1d9",
+    muted: "#8b949e",
+    track: "#30363d",
+    green: "#3fb950",
+    stopStroke: "#ffffff",
+    heat: ["#1b2029", "#5c2615", "#94361a", "#d24f2a", "#f3906e"],
+  },
+  light: {
+    ...FONTS,
+    bg: "#ffffff",
+    chipBg: "#f6f8fa",
+    card: "#ffffff",
+    border: "#d0d7de",
+    accent: "#e8552d",
+    text: "#1f2328",
+    sub: "#424a53",
+    muted: "#656d76",
+    track: "#eaeef2",
+    green: "#1a7f37",
+    stopStroke: "#1f2328",
+    heat: ["#ebedf0", "#ffd6c4", "#f99f78", "#e8552d", "#9e2d0e"],
+  },
+};
+let T = THEMES.dark;
+let HEAT = THEMES.dark.heat;
 
 const LANG_COLORS = {
   Rust: "#dea584",
@@ -995,8 +1019,8 @@ function renderMap(m, avatar) {
 
         const tooltip = `${r.nameWithOwner}${r.isPrivate ? " (Private)" : ""} · ${fmtMonthYear(r.activeAt)}`;
         const circle = r.isPrivate
-          ? `<circle cx="${x.toFixed(1)}" cy="${y}" r="6.5" fill="${T.bg}" stroke="#ffffff" stroke-width="2.6" stroke-dasharray="3.2 1.6"><title>${esc(tooltip)}</title></circle><circle cx="${x.toFixed(1)}" cy="${y}" r="2.2" fill="${T.accent}"/>`
-          : `<circle cx="${x.toFixed(1)}" cy="${y}" r="6.5" fill="${T.bg}" stroke="#ffffff" stroke-width="2.8"><title>${esc(tooltip)}</title></circle>`;
+          ? `<circle cx="${x.toFixed(1)}" cy="${y}" r="6.5" fill="${T.bg}" stroke="${T.stopStroke}" stroke-width="2.6" stroke-dasharray="3.2 1.6"><title>${esc(tooltip)}</title></circle><circle cx="${x.toFixed(1)}" cy="${y}" r="2.2" fill="${T.accent}"/>`
+          : `<circle cx="${x.toFixed(1)}" cy="${y}" r="6.5" fill="${T.bg}" stroke="${T.stopStroke}" stroke-width="2.8"><title>${esc(tooltip)}</title></circle>`;
 
         stops.push(r.link ? `<a xlink:href="${esc(r.link)}" target="_blank">${circle}</a>` : `<g>${circle}</g>`);
 
@@ -1034,13 +1058,13 @@ function renderMap(m, avatar) {
   });
 
   const hub = `<g>
-  <circle cx="${cx}" cy="${cy}" r="31" fill="${T.bg}" stroke="#ffffff" stroke-width="3.5"/>
+  <circle cx="${cx}" cy="${cy}" r="31" fill="${T.bg}" stroke="${T.stopStroke}" stroke-width="3.5"/>
   ${
     avatar
       ? `<image xlink:href="${avatar}" x="${cx - 26}" y="${cy - 26}" width="52" height="52" clip-path="url(#hubclip)" preserveAspectRatio="xMidYMid slice"/>`
-      : `<text x="${cx}" y="${cy + 6}" text-anchor="middle" font-family="${T.sans}" font-size="18" font-weight="800" fill="#fff">${esc(m.user.login[0].toUpperCase())}</text>`
+      : `<text x="${cx}" y="${cy + 6}" text-anchor="middle" font-family="${T.sans}" font-size="18" font-weight="800" fill="${T.text}">${esc(m.user.login[0].toUpperCase())}</text>`
   }
-  <text x="${cx}" y="${cy + 48}" text-anchor="middle" font-family="${T.sans}" font-size="11.5" font-weight="800" fill="#ffffff" stroke="${T.bg}" stroke-width="4" paint-order="stroke">@${esc(m.user.login.toLowerCase())}</text>
+  <text x="${cx}" y="${cy + 48}" text-anchor="middle" font-family="${T.sans}" font-size="11.5" font-weight="800" fill="${T.text}" stroke="${T.bg}" stroke-width="4" paint-order="stroke">@${esc(m.user.login.toLowerCase())}</text>
 </g>`;
 
   // Bottom timeline bar showing oldest -> newest orientation.
@@ -1141,7 +1165,7 @@ function renderFleet(fleet = []) {
         cy += chipH + gapY;
       }
       blocks.push(`<g transform="translate(${cx},${cy})">
-  <rect width="${pw}" height="${chipH}" rx="6" fill="${T.bg}" stroke="${T.border}"/>
+  <rect width="${pw}" height="${chipH}" rx="6" fill="${T.chipBg}" stroke="${T.border}"/>
   <rect width="3" height="${chipH - 8}" x="1.5" y="4" rx="1.5" fill="${color}"/>
   <text x="${(pw / 2 + 1.5).toFixed(1)}" y="14.5" text-anchor="middle" font-family="${T.mono}" font-size="10" font-weight="600" fill="${T.text}">${esc(text)}</text>
 </g>`);
@@ -1207,7 +1231,7 @@ function renderStation(r, idx, colors) {
 
   const lockBadge = r.isPrivate
     ? `<g transform="translate(${W - 118},25)">
-  <rect width="58" height="18" rx="9" fill="${T.bg}" stroke="${T.border}"/>
+  <rect width="58" height="18" rx="9" fill="${T.chipBg}" stroke="${T.border}"/>
   ${lockIcon(6, 4, 9.5, T.accent)}
   <text x="19" y="12.2" font-family="${T.mono}" font-size="8" font-weight="700" fill="${T.sub}">PRIVATE</text>
 </g>`
@@ -1315,41 +1339,54 @@ if (m.stats.repoTotal === 0) {
   process.exit(1);
 }
 const avatar = await avatarData(m.user.avatarUrl);
-await fs.mkdir(OUT, { recursive: true });
+// Render both dark (metro/) and light (metro/light/) SVG sets for GitHub theme switching.
+for (const [themeName, outDir] of [
+  ["dark", OUT],
+  ["light", path.join(OUT, "light")],
+]) {
+  T = THEMES[themeName];
+  HEAT = T.heat;
+  await fs.mkdir(outDir, { recursive: true });
 
-// Remove stale station SVGs when stationCount changes.
-for (const f of await fs.readdir(OUT)) {
-  if (/^station-\d+\.svg$/.test(f)) await fs.unlink(path.join(OUT, f));
+  // Remove stale station SVGs when stationCount changes.
+  for (const f of await fs.readdir(outDir)) {
+    if (/^station-\d+\.svg$/.test(f)) await fs.unlink(path.join(outDir, f));
+  }
+
+  const files = {
+    "map.svg": renderMap(m, avatar),
+    "interchange.svg": renderInterchange(m, avatar),
+    "lines.svg": renderLines(m),
+    "timetable.svg": renderTimetable(m),
+  };
+  if (config.profile?.fleet?.length) {
+    files["fleet.svg"] = renderFleet(config.profile.fleet);
+  }
+  if (config.profile?.dispatch) {
+    files["dispatch.svg"] = renderDispatch(config.profile.dispatch);
+  }
+  m.stations.forEach((r, i) => {
+    files[`station-${i + 1}.svg`] = renderStation(r, i, m.colors);
+  });
+  for (const [f, c] of Object.entries(files)) {
+    await fs.writeFile(path.join(outDir, f), c);
+  }
 }
 
-const files = {
-  "map.svg": renderMap(m, avatar),
-  "interchange.svg": renderInterchange(m, avatar),
-  "lines.svg": renderLines(m),
-  "timetable.svg": renderTimetable(m),
-};
-if (config.profile?.fleet?.length) {
-  files["fleet.svg"] = renderFleet(config.profile.fleet);
-}
-if (config.profile?.dispatch) {
-  files["dispatch.svg"] = renderDispatch(config.profile.dispatch);
-}
-m.stations.forEach((r, i) => {
-  files[`station-${i + 1}.svg`] = renderStation(r, i, m.colors);
-});
-for (const [f, c] of Object.entries(files)) {
-  await fs.writeFile(path.join(OUT, f), c);
-}
-
-// Update the STATIONS block in README.md (2-column rows; private stations stay non-clickable).
+// Update the STATIONS block in README.md with GitHub Light/Dark <picture> switching.
 const readmePath = path.join(ROOT, "README.md");
 let readme = await fs.readFile(readmePath, "utf8").catch(() => "");
 const rows = [];
 for (let i = 0; i < m.stations.length; i += 2) {
   const pair = m.stations.slice(i, i + 2).map((r, offset) => {
     const idx = i + offset + 1;
-    const img = `<img src="metro/station-${idx}.svg" width="49%" alt="${esc(r.label)}"/>`;
-    return r.link ? `<a href="${esc(r.link)}">${img}</a>` : img;
+    const pic =
+      `<picture>` +
+      `<source media="(prefers-color-scheme: light)" srcset="metro/light/station-${idx}.svg"/>` +
+      `<source media="(prefers-color-scheme: dark)" srcset="metro/station-${idx}.svg"/>` +
+      `<img src="metro/station-${idx}.svg" width="49%" alt="${esc(r.label)}"/>` +
+      `</picture>`;
+    return r.link ? `<a href="${esc(r.link)}">${pic}</a>` : pic;
   });
   rows.push(`<p align="center">\n  ${pair.join("\n  ")}\n</p>`);
 }
