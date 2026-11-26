@@ -28,6 +28,38 @@
   "excludeLanguages": [],
 
   "stationCount": 6,
-  "stations": [],
-  "_stations_hint": "Kosongkan untuk otomatis 6 repo paling aktif/terbaru (pushedAt). Isi nama repo untuk pin manual di urutan depan."
+  "stations": [
+    "REGtee-Cloud/Regtee-MonoRepo",
+    "Lapnes/Enclavitzy",
+    "Lapnes/luco-untan-dev",
+    "Lapnes/SMSML_Ragil-Amirzaky",
+    "Lapnes/REGtee-HyTerra",
+    "Lapnes/fedora-backup-tools"
+  ],
+
+  "descriptionOverrides": {
+    "Lapnes/fedora-backup-tools": "Automated Fedora Linux backup, restore & power toolkit with package snapshots and rclone cloud sync."
+  },
+
+  "descriptionFromReadme": [
+    "REGtee-Cloud/Regtee-MonoRepo"
+  ],
+  "_descriptionFromReadme_hint": "Repo di daftar ini akan otomatis meringkas deskripsi kartu Station langsung dari README.md (saat diakses dengan METRO_TOKEN).",
+
+  "stationFallbacks": {
+    "REGtee-Cloud/Regtee-MonoRepo": {
+      "name": "Regtee-MonoRepo",
+      "owner": "REGtee-Cloud",
+      "isPrivate": true,
+      "language": "Go",
+      "description": "Sovereign bare-metal PaaS/IaaS cloud orchestrator in Go with WireGuard CGNAT bypass & Proxmox."
+    },
+    "Lapnes/Enclavitzy": {
+      "name": "Enclavitzy",
+      "owner": "Lapnes",
+      "isPrivate": true,
+      "language": "Rust",
+      "description": "Ultra-lightweight Rust/Tauri v2 exam lockdown browser & native C++23 IDE for DOMjudge contests."
+    }
+  }
 }

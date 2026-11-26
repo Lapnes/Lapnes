@@ -136,6 +136,64 @@ function matchesRepoList(repo, set) {
   return set.has(repo.name.toLowerCase()) || set.has((repo.nameWithOwner || "").toLowerCase());
 }
 
+// Extracts a clean 1-2 sentence summary from a repository's README.md,
+// skipping HTML wrappers, badges, navigation links, tables, and code fences.
+function extractReadmeSummary(md) {
+  if (!md) return null;
+  const cleaned = String(md)
+    .replace(/<!--[\s\S]*?-->/g, "\n")
+    .replace(/```[\s\S]*?```/g, "\n")
+    .replace(/~~~[\s\S]*?~~~/g, "\n")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+    .replace(/\[!\[[^\]]*\]\([^)]*\)\]\([^)]*\)/g, "")
+    .replace(/<img[^>]*>/gi, "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/?(div|p|span|a|center|sub|sup|b|strong|i|em|h[1-6]|picture|source)[^>]*>/gi, "");
+
+  const rawBlocks = cleaned.split(/\n\s*\n/);
+  const candidates = [];
+  for (const block of rawBlocks) {
+    const lines = block
+      .split("\n")
+      .map((l) => l.trim())
+      .filter((l) => l && !/^#{1,6}\s/.test(l) && !/^[-*_]{3,}$/.test(l) && !/^\|/.test(l) && !/^>\s*\[!/.test(l));
+    if (!lines.length) continue;
+    // Skip pure navigation / bullet link lines (e.g. "[Arch](#a) • [Docs](#b)")
+    const nonNav = lines.filter((l) => {
+      const stripped = l
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+        .replace(/[•·|/\-*\s]/g, "");
+      const linkCount = (l.match(/\]\(#?[^)]+\)/g) || []).length;
+      return stripped.length > 0 && !(linkCount >= 2 && stripped.length < 60);
+    });
+    if (!nonNav.length) continue;
+    let text = nonNav
+      .join(" ")
+      .replace(/^>\s*/g, "")
+      .replace(/^[-*+]\s+/g, "")
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+      .replace(/`([^`]+)`/g, "$1")
+      .replace(/\*\*([^*]+)\*\*/g, "$1")
+      .replace(/\*([^*]+)\*/g, "$1")
+      .replace(/__([^_]+)__/g, "$1")
+      .replace(/&bull;|&#8226;/gi, "·")
+      .replace(/&amp;/gi, "&")
+      .replace(/\s+/g, " ")
+      .trim();
+    // Strip leading emojis / decorative symbols for cleaner card typography.
+    text = text.replace(/^[\p{Extended_Pictographic}\uFE0F\u200D\s]+/u, "").trim();
+    if (text.length >= 35 && /[a-zA-Z]{4,}/.test(text)) {
+      candidates.push(text);
+    }
+  }
+  if (!candidates.length) return null;
+  // Prefer a rich descriptive paragraph (>= 60 chars) over a short motto line when available.
+  const best = candidates.find((c) => c.length >= 60 && !/^\[/.test(c)) || candidates[0];
+  // Trim cleanly to the first sentence if it is already long enough, else keep up to ~116 chars.
+  const firstSentence = best.match(/^[^.!?]{45,118}[.!?]/);
+  return firstSentence ? firstSentence[0].trim() : best;
+}
+
 function svg(w, h, body, title) {
   return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(title)}">
 <title>${esc(title)}</title>
@@ -393,22 +451,81 @@ async function fetchAll() {
     }
   }
 
+  // 4) Explicitly fetch any pinned `owner/repo` stations not yet in repoMap,
+  //    plus README.md blobs for repos configured in `descriptionFromReadme`.
+  const readmeTargets = new Set(
+    (config.descriptionFromReadme || []).map((s) => s.toLowerCase())
+  );
+  const pinnedFullNames = (config.stations || []).filter((s) => s.includes("/"));
+  const directLookups = new Set([
+    ...pinnedFullNames.map((s) => s.toLowerCase()),
+    ...[...readmeTargets].filter((s) => s.includes("/")),
+  ]);
+
+  const readmeTexts = new Map();
+  for (const full of directLookups) {
+    const [owner, name] = full.split("/");
+    if (!owner || !name) continue;
+    const existing = repoMap.get(full);
+    const needRepo = !existing;
+    const needReadme = readmeTargets.has(full) || (existing && !existing.description);
+    if (!needRepo && !needReadme) continue;
+    try {
+      const q = `query($owner:String!, $name:String!${needRepo ? ", $userId:ID!" : ""}){
+        repository(owner:$owner, name:$name){
+          ${needRepo ? `${REPO_FIELDS}
+          defaultBranchRef {
+            target {
+              ... on Commit {
+                myCommits: history(first:1, author:{id:$userId}) { totalCount }
+              }
+            }
+          }` : "nameWithOwner"}
+          ${needReadme || needRepo ? `
+          r1: object(expression:"HEAD:README.md") { ... on Blob { text } }
+          r2: object(expression:"HEAD:readme.md") { ... on Blob { text } }
+          r3: object(expression:"HEAD:Readme.md") { ... on Blob { text } }` : ""}
+        }
+      }`;
+      const vars = needRepo ? { owner, name, userId } : { owner, name };
+      const d = await gql(q, vars, { allowPartial: true });
+      const repo = d?.repository;
+      if (repo) {
+        if (needRepo) addRepo(repo, "affiliated");
+        const md = repo.r1?.text || repo.r2?.text || repo.r3?.text || null;
+        if (md) readmeTexts.set(repo.nameWithOwner.toLowerCase(), md);
+      }
+    } catch (err) {
+      console.warn(`⚠ Direct lookup skipped for ${owner}/${name} (${err.message.slice(0, 90)})`);
+    }
+  }
+
   return {
     isSelf,
     user: head.user,
     repos: [...repoMap.values()],
     contributedRepos,
+    readmeTexts,
   };
 }
 
 // ───────────────────────────── processing ─────────────────────────────
 function processData(data) {
-  const { user, repos: rawRepos, contributedRepos } = data;
+  const { user, repos: rawRepos, contributedRepos, readmeTexts = new Map() } = data;
   const excludeSet = new Set((config.excludeRepos || []).map((s) => s.toLowerCase()));
   const maskSet = new Set((config.maskRepos || []).map((s) => s.toLowerCase()));
   const exLang = new Set((config.excludeLanguages || []).map((s) => s.toLowerCase()));
   const overrides = new Map(
     Object.entries(config.languageOverrides || {}).map(([k, v]) => [k.toLowerCase(), v])
+  );
+  const descOverrides = new Map(
+    Object.entries(config.descriptionOverrides || {}).map(([k, v]) => [k.toLowerCase(), v])
+  );
+  const readmeDescSet = new Set(
+    (config.descriptionFromReadme || []).map((s) => s.toLowerCase())
+  );
+  const pinnedSet = new Set(
+    (config.stations || []).map((s) => s.toLowerCase())
   );
   const pinLangs = (config.pinLanguages || []).map((s) => s.toLowerCase());
 
@@ -420,16 +537,18 @@ function processData(data) {
   //   1. All personal non-fork repos (public + private)
   //   2. Any Org / Collaborator repo where user has commits or contributions
   //   3. Forks ONLY when user authored commits or contributions in them
+  //   4. Explicitly pinned station repos are always included when accessible
   const included = [];
   for (const r of rawRepos) {
     if (matchesRepoList(r, excludeSet)) continue;
     const key = r.nameWithOwner.toLowerCase();
     const isOwned = (r.owner?.login || "").toLowerCase() === loginLower;
+    const isPinned = matchesRepoList(r, pinnedSet);
     const contribCount = (r.myCommitsCount || 0) + (contributedRepos.get(key) || 0);
     const hasMyWork = contribCount > 0;
 
     if (r.isFork) {
-      if (config.includeContributedForks !== false && hasMyWork) {
+      if (isPinned || (config.includeContributedForks !== false && hasMyWork)) {
         included.push({ ...r, isOwned, contribCount });
       } else {
         skippedForks++;
@@ -437,7 +556,7 @@ function processData(data) {
       continue;
     }
 
-    if (isOwned || hasMyWork) {
+    if (isOwned || hasMyWork || isPinned) {
       included.push({ ...r, isOwned, contribCount });
     } else {
       skippedUntouchedOrg++;
@@ -462,9 +581,11 @@ function processData(data) {
   // Sort newest -> oldest for deterministic masking index & station picking.
   enriched.sort((a, b) => b.ts - a.ts || a.nameWithOwner.localeCompare(b.nameWithOwner));
 
-  // Build display-safe view of each repo honouring privacy + maskRepos.
+  // Build display-safe view of each repo honouring privacy, maskRepos,
+  // descriptionOverrides, and live README.md description extraction.
   let maskIndex = 0;
   const toView = (r) => {
+    const key = r.nameWithOwner.toLowerCase();
     const forceMask = matchesRepoList(r, maskSet);
     const isMasked = r.isPrivate && (PRIVACY === "mask" || forceMask);
     if (isMasked) {
@@ -478,10 +599,18 @@ function processData(data) {
         showOrg: false,
       };
     }
+    const customDesc = descOverrides.get(key) || descOverrides.get(r.name.toLowerCase());
+    const forceReadme = matchesRepoList(r, readmeDescSet);
+    const readmeSummary = readmeTexts.has(key) ? extractReadmeSummary(readmeTexts.get(key)) : null;
     return {
       ...r,
       label: r.name,
-      desc: r.description || (r.isPrivate ? "Private project in progress." : "A project in progress."),
+      desc:
+        customDesc ||
+        (forceReadme ? readmeSummary : null) ||
+        r.description ||
+        readmeSummary ||
+        (r.isPrivate ? "Private project in progress." : "A project in progress."),
       link: r.isPrivate ? null : r.url,
       masked: false,
       showOrg: !r.isOwned,
@@ -564,14 +693,42 @@ function processData(data) {
     : 0;
 
   // Featured Stations (6 cards by default): manual pins first, then most recently active.
+  const fallbacks = new Map(
+    Object.entries(config.stationFallbacks || {}).map(([k, v]) => [k.toLowerCase(), v])
+  );
   const stationCount = config.stationCount || 6;
   const stations = [];
   const usedKeys = new Set();
   for (const s of config.stations || []) {
-    const found = byKey.get(s.toLowerCase()) || byName.get(s.toLowerCase());
+    const key = s.toLowerCase();
+    const found = byKey.get(key) || byName.get(key);
     if (found && !usedKeys.has(found.nameWithOwner.toLowerCase())) {
       stations.push(found);
       usedKeys.add(found.nameWithOwner.toLowerCase());
+      continue;
+    }
+    const fb = fallbacks.get(key);
+    if (fb && !usedKeys.has(key)) {
+      const fbOwner = fb.owner || (s.includes("/") ? s.split("/")[0] : LOGIN);
+      const fbName = fb.name || (s.includes("/") ? s.split("/")[1] : s);
+      const fbLang = fb.language || INFRA_LINE;
+      stations.push({
+        name: fbName,
+        nameWithOwner: `${fbOwner}/${fbName}`,
+        owner: { login: fbOwner },
+        label: fbName,
+        desc: fb.description || "Private project in progress.",
+        link: fb.isPrivate ? null : fb.url || null,
+        isPrivate: fb.isPrivate !== false,
+        masked: false,
+        showOrg: fbOwner.toLowerCase() !== loginLower,
+        lineLang: fbLang,
+        lineColor: LANG_COLORS[fbLang] || INFRA_COLOR,
+        stargazerCount: fb.stars || 0,
+        forkCount: fb.forks || 0,
+        activeAt: fb.activeAt || null,
+      });
+      usedKeys.add(key);
     }
   }
   for (const r of visible) {

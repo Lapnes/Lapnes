@@ -19,16 +19,16 @@
 
 <!-- STATIONS:START -->
 <p align="center">
-  <a href="https://github.com/Lapnes/Enclavitzy-Release"><img src="metro/station-1.svg" width="49%" alt="Enclavitzy-Release"/></a>
-  <a href="https://github.com/Lapnes/luco-untan-dev"><img src="metro/station-2.svg" width="49%" alt="luco-untan-dev"/></a>
+  <img src="metro/station-1.svg" width="49%" alt="Regtee-MonoRepo"/>
+  <img src="metro/station-2.svg" width="49%" alt="Enclavitzy"/>
 </p>
 <p align="center">
-  <a href="https://github.com/Lapnes/SMSML_Ragil-Amirzaky"><img src="metro/station-3.svg" width="49%" alt="SMSML_Ragil-Amirzaky"/></a>
-  <a href="https://github.com/Lapnes/REGtee-architecture-showcase"><img src="metro/station-4.svg" width="49%" alt="REGtee-architecture-showcase"/></a>
+  <a href="https://github.com/Lapnes/luco-untan-dev"><img src="metro/station-3.svg" width="49%" alt="luco-untan-dev"/></a>
+  <a href="https://github.com/Lapnes/SMSML_Ragil-Amirzaky"><img src="metro/station-4.svg" width="49%" alt="SMSML_Ragil-Amirzaky"/></a>
 </p>
 <p align="center">
-  <a href="https://github.com/Lapnes/Eksperimen_SML_Ragil-Amirzaky"><img src="metro/station-5.svg" width="49%" alt="Eksperimen_SML_Ragil-Amirzaky"/></a>
-  <a href="https://github.com/Lapnes/Workflow-CI"><img src="metro/station-6.svg" width="49%" alt="Workflow-CI"/></a>
+  <a href="https://github.com/Lapnes/REGtee-HyTerra"><img src="metro/station-5.svg" width="49%" alt="REGtee-HyTerra"/></a>
+  <a href="https://github.com/Lapnes/fedora-backup-tools"><img src="metro/station-6.svg" width="49%" alt="fedora-backup-tools"/></a>
 </p>
 <!-- STATIONS:END -->
 
