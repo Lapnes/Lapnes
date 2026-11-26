@@ -194,8 +194,12 @@ async function gql(query, variables = {}, { allowPartial = false } = {}) {
   });
   const json = await res.json();
   if (!res.ok) throw new Error(JSON.stringify(json, null, 2));
-  if (json.errors && (!allowPartial || !json.data)) {
-    throw new Error(JSON.stringify(json.errors, null, 2));
+  if (json.errors) {
+    if (!allowPartial || !json.data) {
+      throw new Error(JSON.stringify(json.errors, null, 2));
+    }
+    const msgs = [...new Set(json.errors.map((e) => e.message))].slice(0, 3);
+    console.warn(`⚠ GraphQL partial errors (${json.errors.length}): ${msgs.join(" | ")}`);
   }
   return json.data;
 }
@@ -251,10 +255,11 @@ async function fetchAll() {
   const isSelf = head.viewer.login.toLowerCase() === LOGIN.toLowerCase();
   const userId = head.user.id;
   if (!isSelf) {
-    console.warn(`⚠ Token belongs to ${head.viewer.login}, not ${LOGIN} — only public data is visible.`);
+    console.warn(`⚠ Token belongs to ${head.viewer.login}, not ${LOGIN} — only public owned repos are visible until METRO_TOKEN is configured.`);
   }
 
-  // 1) Collect all repos across OWNER, COLLABORATOR, ORGANIZATION_MEMBER.
+  // 1) Collect all repos across OWNER, COLLABORATOR, ORGANIZATION_MEMBER (when isSelf),
+  //    or public OWNER repos when running under fallback GITHUB_TOKEN (github-actions[bot]).
   const repoMap = new Map();
   const addRepo = (node, source) => {
     if (!node || !node.nameWithOwner) return;
@@ -273,15 +278,15 @@ async function fetchAll() {
     }
   };
 
-  const affiliations = config.includeOrgAndCollab !== false
-    ? "[OWNER, COLLABORATOR, ORGANIZATION_MEMBER]"
-    : "[OWNER]";
+  const repoFilter = isSelf
+    ? `affiliations:${config.includeOrgAndCollab !== false ? "[OWNER, COLLABORATOR, ORGANIZATION_MEMBER]" : "[OWNER]"}`
+    : "ownerAffiliations:OWNER";
 
   let after = null;
   do {
     const q = `query(${isSelf ? "" : "$login:String!, "}$after:String, $userId:ID!){
       ${isSelf ? "owner: viewer" : "owner: user(login:$login)"} {
-        repositories(first:100, after:$after, affiliations:${affiliations}, orderBy:{field:PUSHED_AT, direction:DESC}) {
+        repositories(first:100, after:$after, ${repoFilter}, orderBy:{field:PUSHED_AT, direction:DESC}) {
           pageInfo { hasNextPage endCursor }
           nodes {
             ${REPO_FIELDS}
@@ -1008,6 +1013,10 @@ ${stat(164, `TRIPS IN ${s.yearNum}`, s.yearTotal.toLocaleString("en-US"), s.year
 // ───────────────────────────── main ─────────────────────────────
 const raw = await fetchAll();
 const m = processData(raw);
+if (m.stats.repoTotal === 0) {
+  console.error("✖ Aborting: 0 repositories returned from GitHub API. Existing SVGs were left untouched.");
+  process.exit(1);
+}
 const avatar = await avatarData(m.user.avatarUrl);
 await fs.mkdir(OUT, { recursive: true });
 

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="442" height="156" viewBox="0 0 442 156" role="img" aria-label="Station 6: Workflow-CI">
+<title>Station 6: Workflow-CI</title>
+<defs><clipPath id="cc"><rect width="442" height="156" rx="12"/></clipPath></defs>
+<g clip-path="url(#cc)">
+  <rect width="442" height="156" fill="#10141b"/>
+  <rect width="442" height="5" fill="#e8552d"/>
+</g>
+<rect x="0.5" y="0.5" width="441" height="155" rx="12" fill="none" stroke="#262c36"/>
+<g transform="translate(24,30)">
+  <circle cx="7" cy="0" r="7" fill="#e8552d"/>
+  <text x="7" y="3.5" text-anchor="middle" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="9" font-weight="800" fill="#fff">M</text>
+  <text x="21" y="4" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#f0f3f6">Station 06</text>
+</g>
+<circle cx="406" cy="34" r="15" fill="#3572A5"/><text x="406" y="38" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" font-weight="800" fill="#ffffff">PY</text>
+<text x="24" y="68" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="14.5" font-weight="800" fill="#f0f3f6">Workflow-CI</text>
+<text x="24" y="90" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11.5" fill="#c9d1d9">A project in progress.</text>
+<text x="24" y="134" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#8b949e">★ 0</text>
+<text x="64" y="134" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#8b949e">⑂ 0</text>
+<g transform="translate(104,124)">
+  <rect width="13" height="13" rx="2.9" fill="#3572A5"/>
+  <text x="6.5" y="8.8" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="6.5" font-weight="800" fill="#ffffff">PY</text>
+</g>
+<text x="123" y="134" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#8b949e">Python</text>
+<text x="418" y="134" text-anchor="end" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9.5" fill="#8b949e">Jul 2026</text>
+</svg>

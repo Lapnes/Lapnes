@@ -1,15 +1,94 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="86" viewBox="0 0 900 86" role="img" aria-label="Languages">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="326" viewBox="0 0 900 326" role="img" aria-label="Languages">
 <title>Languages</title>
-<defs><clipPath id="cc"><rect width="900" height="86" rx="12"/></clipPath></defs>
+<defs><clipPath id="cc"><rect width="900" height="326" rx="12"/></clipPath></defs>
 <g clip-path="url(#cc)">
-  <rect width="900" height="86" fill="#10141b"/>
+  <rect width="900" height="326" fill="#10141b"/>
   <rect width="900" height="5" fill="#e8552d"/>
 </g>
-<rect x="0.5" y="0.5" width="899" height="85" rx="12" fill="none" stroke="#262c36"/>
+<rect x="0.5" y="0.5" width="899" height="325" rx="12" fill="none" stroke="#262c36"/>
 <g transform="translate(24,30)">
   <circle cx="7" cy="0" r="7" fill="#e8552d"/>
   <text x="7" y="3.5" text-anchor="middle" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="9" font-weight="800" fill="#fff">M</text>
   <text x="21" y="4" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#f0f3f6">Lines</text>
 </g>
-<text x="876" y="34" text-anchor="end" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9" fill="#8b949e">by bytes · public + private + orgs</text>
+<text x="876" y="34" text-anchor="end" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9" fill="#8b949e">by bytes · public + private + orgs</text><g transform="translate(24,60)">
+  <rect width="16" height="16" rx="3.5" fill="#f1e05a"/>
+  <text x="8" y="10.9" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="8.0" font-weight="800" fill="#0d1117">JS</text>
+</g>
+<text x="50" y="72.5" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#f0f3f6">JavaScript</text>
+<rect x="200" y="63" width="576" height="10" rx="5" fill="#30363d"/>
+<rect x="200" y="63" width="576.0" height="10" rx="5" fill="#f1e05a">
+  <animate attributeName="width" values="0;0;576.0" keyTimes="0;0.00;1" dur="1.6s" fill="freeze"/>
+</rect>
+<text x="876" y="72" text-anchor="end" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#c9d1d9">52%</text>
+<g transform="translate(24,90)">
+  <rect width="16" height="16" rx="3.5" fill="#e34c26"/>
+  <text x="8" y="10.9" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="8.0" font-weight="800" fill="#ffffff">HT</text>
+</g>
+<text x="50" y="102.5" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#f0f3f6">HTML</text>
+<rect x="200" y="93" width="576" height="10" rx="5" fill="#30363d"/>
+<rect x="200" y="93" width="218.4" height="10" rx="5" fill="#e34c26">
+  <animate attributeName="width" values="0;0;218.4" keyTimes="0;0.07;1" dur="1.6s" fill="freeze"/>
+</rect>
+<text x="876" y="102" text-anchor="end" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#c9d1d9">20%</text>
+<g transform="translate(24,120)">
+  <rect width="16" height="16" rx="3.5" fill="#3572A5"/>
+  <text x="8" y="10.9" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="8.0" font-weight="800" fill="#ffffff">PY</text>
+</g>
+<text x="50" y="132.5" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#f0f3f6">Python</text>
+<rect x="200" y="123" width="576" height="10" rx="5" fill="#30363d"/>
+<rect x="200" y="123" width="101.9" height="10" rx="5" fill="#3572A5">
+  <animate attributeName="width" values="0;0;101.9" keyTimes="0;0.14;1" dur="1.6s" fill="freeze"/>
+</rect>
+<text x="876" y="132" text-anchor="end" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#c9d1d9">9%</text>
+<g transform="translate(24,150)">
+  <rect width="16" height="16" rx="3.5" fill="#3178c6"/>
+  <text x="8" y="10.9" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="8.0" font-weight="800" fill="#ffffff">TS</text>
+</g>
+<text x="50" y="162.5" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#f0f3f6">TypeScript</text>
+<rect x="200" y="153" width="576" height="10" rx="5" fill="#30363d"/>
+<rect x="200" y="153" width="92.8" height="10" rx="5" fill="#3178c6">
+  <animate attributeName="width" values="0;0;92.8" keyTimes="0;0.21;1" dur="1.6s" fill="freeze"/>
+</rect>
+<text x="876" y="162" text-anchor="end" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#c9d1d9">8%</text>
+<g transform="translate(24,180)">
+  <rect width="16" height="16" rx="3.5" fill="#663399"/>
+  <text x="8" y="10.3" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="6.4" font-weight="800" fill="#ffffff">CSS</text>
+</g>
+<text x="50" y="192.5" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#f0f3f6">CSS</text>
+<rect x="200" y="183" width="576" height="10" rx="5" fill="#30363d"/>
+<rect x="200" y="183" width="87.7" height="10" rx="5" fill="#663399">
+  <animate attributeName="width" values="0;0;87.7" keyTimes="0;0.28;1" dur="1.6s" fill="freeze"/>
+</rect>
+<text x="876" y="192" text-anchor="end" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#c9d1d9">8%</text>
+<g transform="translate(24,210)">
+  <rect width="16" height="16" rx="3.5" fill="#89e051"/>
+  <text x="8" y="10.9" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="8.0" font-weight="800" fill="#0d1117">SH</text>
+</g>
+<text x="50" y="222.5" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#f0f3f6">Shell</text>
+<rect x="200" y="213" width="576" height="10" rx="5" fill="#30363d"/>
+<rect x="200" y="213" width="14.9" height="10" rx="5" fill="#89e051">
+  <animate attributeName="width" values="0;0;14.9" keyTimes="0;0.35;1" dur="1.6s" fill="freeze"/>
+</rect>
+<text x="876" y="222" text-anchor="end" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#c9d1d9">1%</text>
+<g transform="translate(24,240)">
+  <rect width="16" height="16" rx="3.5" fill="#00ADD8"/>
+  <text x="8" y="10.9" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="8.0" font-weight="800" fill="#ffffff">GO</text>
+</g>
+<text x="50" y="252.5" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#f0f3f6">Go</text>
+<rect x="200" y="243" width="576" height="10" rx="5" fill="#30363d"/>
+<rect x="200" y="243" width="10.0" height="10" rx="5" fill="#00ADD8">
+  <animate attributeName="width" values="0;0;10.0" keyTimes="0;0.42;1" dur="1.6s" fill="freeze"/>
+</rect>
+<text x="876" y="252" text-anchor="end" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#c9d1d9">0.3%</text>
+<g transform="translate(24,270)">
+  <rect width="16" height="16" rx="3.5" fill="#C1F12E"/>
+  <text x="8" y="10.3" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="6.4" font-weight="800" fill="#0d1117">BAT</text>
+</g>
+<text x="50" y="282.5" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#f0f3f6">Batchfile</text>
+<rect x="200" y="273" width="576" height="10" rx="5" fill="#30363d"/>
+<rect x="200" y="273" width="10.0" height="10" rx="5" fill="#C1F12E">
+  <animate attributeName="width" values="0;0;10.0" keyTimes="0;0.49;1" dur="1.6s" fill="freeze"/>
+</rect>
+<text x="876" y="282" text-anchor="end" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#c9d1d9">0.2%</text>
 </svg>
