@@ -25,7 +25,7 @@
   "infraLineName": "Infra / Docs",
 
   "maxLines": 8,
-  "maxLanguagesInBars": 8,
+  "maxLanguagesInBars": 9,
   "pinLanguages": ["Go", "Rust"],
   "_pinLanguages_hint": "Opsional: kunci bahasa tertentu agar selalu dapat jalur di peta, contoh: [\"Rust\", \"Go\"]",
 
