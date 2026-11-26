@@ -308,6 +308,18 @@ async function fetchAll() {
           totalCommitContributions
           restrictedContributionsCount
           contributionCalendar { totalContributions }
+          commitContributionsByRepository(maxRepositories:100) {
+            contributions { totalCount }
+            repository { isPrivate }
+          }
+          pullRequestContributionsByRepository(maxRepositories:50) {
+            contributions { totalCount }
+            repository { isPrivate }
+          }
+          issueContributionsByRepository(maxRepositories:50) {
+            contributions { totalCount }
+            repository { isPrivate }
+          }
         }
       }
     }`,
@@ -766,6 +778,36 @@ function processData(data) {
   const orgCollabCount = enriched.filter((r) => !r.isOwned).length;
   const yearNum = Number((lastDayDate || "").slice(0, 4)) || new Date().getUTCFullYear();
 
+  // When authenticated as self, GitHub sets restrictedContributionsCount = 0 because
+  // your own private repos aren't restricted to you; sum private repo contributions instead.
+  let yearPrivate = user.year.restrictedContributionsCount || 0;
+  if (yearPrivate === 0) {
+    const lists = [
+      user.year.commitContributionsByRepository || [],
+      user.year.pullRequestContributionsByRepository || [],
+      user.year.issueContributionsByRepository || [],
+    ];
+    for (const list of lists) {
+      for (const entry of list) {
+        if (entry?.repository?.isPrivate) {
+          yearPrivate += entry.contributions?.totalCount || 0;
+        }
+      }
+    }
+  }
+
+  const allLangSummary = [...bytes.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 12)
+    .map(([name, b]) => `${name}:${((b / totalBytes) * 100).toFixed(1)}%`);
+  const topReposByBytes = enriched
+    .map((r) => ({
+      name: r.nameWithOwner,
+      kb: Math.round((r.languages?.edges || []).reduce((a, e) => a + e.size, 0) / 1024),
+    }))
+    .sort((a, b) => b.kb - a.kb)
+    .slice(0, 8);
+
   return {
     user,
     lines,
@@ -774,12 +816,13 @@ function processData(data) {
     weeks,
     colors,
     timeline: { minTs, midTs, maxTs },
+    diagnostics: { allLangSummary, topReposByBytes },
     stats: {
       current,
       longest,
       yearNum,
       yearTotal: user.year.contributionCalendar.totalContributions,
-      yearPrivate: user.year.restrictedContributionsCount,
+      yearPrivate,
       repoTotal: enriched.length,
       repoPrivate: privCount,
       orgCollabCount,
@@ -1225,6 +1268,8 @@ console.log(
     `${m.stations.length} stations, ${m.stats.yearTotal} contributions in ${m.stats.yearNum} (${m.stats.yearPrivate} private).`
 );
 console.log(`  Skipped: ${m.stats.skippedForks} untouched forks, ${m.stats.skippedUntouchedOrg} untouched org/collab repos.`);
+console.log(`  Top langs: ${m.diagnostics.allLangSummary.join(", ")}`);
+console.log(`  Largest repos (KB): ${m.diagnostics.topReposByBytes.map((r) => `${r.name}=${r.kb}KB`).join(", ")}`);
 if (m.stats.repoPrivate === 0 && m.stats.yearPrivate > 0) {
   console.warn(
     `⚠ Detected ${m.stats.yearPrivate} private contributions, but 0 private repos were accessible with this token.\n` +
