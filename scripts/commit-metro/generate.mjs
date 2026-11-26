@@ -189,9 +189,13 @@ function extractReadmeSummary(md) {
   if (!candidates.length) return null;
   // Prefer a rich descriptive paragraph (>= 60 chars) over a short motto line when available.
   const best = candidates.find((c) => c.length >= 60 && !/^\[/.test(c)) || candidates[0];
-  // Trim cleanly to the first sentence if it is already long enough, else keep up to ~116 chars.
-  const firstSentence = best.match(/^[^.!?]{45,118}[.!?]/);
-  return firstSentence ? firstSentence[0].trim() : best;
+  // If the first sentence is already substantial (65..118 chars), stop there;
+  // otherwise keep up to 2 sentences so short mottos include the actual explanation.
+  const s1 = best.match(/^[^.!?]{65,118}[.!?]/);
+  if (s1) return s1[0].trim();
+  const s2 = best.match(/^[^.!?]+[.!?]\s+[^.!?]{15,110}[.!?]/);
+  if (s2 && s2[0].length <= 135) return s2[0].trim();
+  return best;
 }
 
 function svg(w, h, body, title) {
@@ -929,19 +933,21 @@ function renderMap(m, avatar) {
 
       const spacing = arr.length > 1 ? span / (arr.length - 1) : 220;
       const staggered = arr.length >= 2 && spacing < 195;
-      // Same-side neighbor distance is 2*spacing when staggered, or spacing when all above.
-      const availW = staggered ? Math.min(spacing * 1.75, 165) : Math.min(spacing - 16, 175);
+      // Same-side neighbor distance is 2*spacing when staggered, minus room for edge clamping.
+      const availW = staggered
+        ? Math.min(arr.length >= 3 ? spacing * 1.38 : spacing * 1.7, 152)
+        : Math.min(spacing - 18, 170);
       arr.forEach((r, k) => {
         const x = xs[k];
         const above = staggered ? k % 2 === 0 : true;
         const ly = above ? y - 12 : y + 20;
-        const maxChars = Math.max(8, Math.min(22, Math.floor(availW / 6.8)));
+        const maxChars = Math.max(8, Math.min(20, Math.floor((availW - (r.isPrivate ? 12 : 0)) / 6.8)));
         const text = trunc(r.label, maxChars);
         const lockPad = r.isPrivate ? 12 : 0;
         const textW = text.length * 6.8 + lockPad;
         const half = textW / 2;
-        const minX = side === "L" ? leftEnd + half + 8 : bendR + half - 18;
-        const maxX = side === "L" ? bendL - half + 18 : W - half - 18;
+        const minX = side === "L" ? leftEnd + half + 6 : bendR + half - 18;
+        const maxX = side === "L" ? bendL - half + 20 : W - half - 18;
         const tx = Math.min(Math.max(x, Math.min(minX, maxX)), Math.max(minX, maxX));
 
         const tooltip = `${r.nameWithOwner}${r.isPrivate ? " (Private)" : ""} · ${fmtMonthYear(r.activeAt)}`;

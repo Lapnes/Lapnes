@@ -19,10 +19,12 @@
 
   "maxLines": 8,
   "maxLanguagesInBars": 8,
-  "pinLanguages": [],
+  "pinLanguages": ["Go", "Rust"],
   "_pinLanguages_hint": "Opsional: kunci bahasa tertentu agar selalu dapat jalur di peta, contoh: [\"Rust\", \"Go\"]",
 
-  "languageOverrides": {},
+  "languageOverrides": {
+    "Lapnes/Enclavitzy": "Rust"
+  },
   "_languageOverrides_hint": "Opsional: override jalur bahasa untuk repo tertentu, contoh: {\"REGtee-HyTerra\": \"Go\"}",
 
   "excludeLanguages": [],
