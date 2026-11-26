@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="442" height="156" viewBox="0 0 442 156" role="img" aria-label="Station 3: luco-untan-dev">
+<title>Station 3: luco-untan-dev</title>
+<defs><clipPath id="cc"><rect width="442" height="156" rx="12"/></clipPath></defs>
+<g clip-path="url(#cc)">
+  <rect width="442" height="156" fill="#ffffff"/>
+  <rect width="442" height="5" fill="#e8552d"/>
+</g>
+<rect x="0.5" y="0.5" width="441" height="155" rx="12" fill="none" stroke="#d0d7de"/>
+<g transform="translate(24,30)">
+  <circle cx="7" cy="0" r="7" fill="#e8552d"/>
+  <text x="7" y="3.5" text-anchor="middle" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="9" font-weight="800" fill="#fff">M</text>
+  <text x="21" y="4" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#1f2328">Station 03</text>
+</g>
+<circle cx="406" cy="34" r="15" fill="#f1e05a"/><text x="406" y="38" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" font-weight="800" fill="#0d1117">JS</text>
+<text x="24" y="68" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="14.5" font-weight="800" fill="#1f2328">luco-untan-dev</text>
+<text x="24" y="90" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11.5" fill="#424a53">Chatbot Asisten Informasi Prodi Informatika UNTAN</text>
+<text x="24" y="106" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11.5" fill="#424a53">berbasis Hybrid Agentic RAG (LlamaIndex + OpenViking…</text>
+<text x="24" y="134" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#656d76">★ 1</text>
+<text x="64" y="134" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#656d76">⑂ 0</text>
+<g transform="translate(104,124)">
+  <rect width="13" height="13" rx="2.9" fill="#f1e05a"/>
+  <text x="6.5" y="8.8" text-anchor="middle" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="6.5" font-weight="800" fill="#0d1117">JS</text>
+</g>
+<text x="123" y="134" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#656d76">JavaScript</text>
+<text x="418" y="134" text-anchor="end" font-family="'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="9.5" fill="#656d76">Nov 2026</text>
+</svg>
